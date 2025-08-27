@@ -63,7 +63,7 @@ export default function Navbar() {
           <ul className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 text-sm font-medium">
             <li>
               <Link
-                href="#"
+                href="/"
                 className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
               >
                 Home
