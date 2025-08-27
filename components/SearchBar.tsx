@@ -55,7 +55,10 @@ export default function SearchBar() {
     selectedCategory?: string
   ) => {
     setLoading(true);
-    const result = await searchServices(searchQuery, selectedCategory);
+    const result = await searchServices(
+      searchQuery,
+      selectedCategory ? [selectedCategory] : []
+    );
     setServices(result);
     setLoading(false);
   };
@@ -99,17 +102,6 @@ export default function SearchBar() {
           onChange={handleChange}
           className="w-full max-w-md p-2 mb-6 border border-gray-300 rounded-lg"
         />
-        {/*  <Select onValueChange={handleCategoryChange} value={category || ""}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="Plumbing">Plumbing</SelectItem>
-            <SelectItem value="Electrical">Electrical</SelectItem>
-            <SelectItem value="Cleaning">Cleaning</SelectItem>
-          </SelectContent>
-        </Select> */}
       </div>
 
       {loading ? (
