@@ -90,16 +90,16 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center p-6">
-      <div className="w-full max-w-md flex gap-4">
+    <div className="flex flex-col justify-center items-center ">
+      <div className="w-full max-w-md flex ">
         <input
           type="text"
           placeholder="Unesite uslugu koju zelite"
           value={query}
           onChange={handleChange}
-          className="w-full max-w-md p-2 mb-4 border border-gray-300 rounded-lg"
+          className="w-full max-w-md p-2 mb-6 border border-gray-300 rounded-lg"
         />
-        <Select onValueChange={handleCategoryChange} value={category || ""}>
+        {/*  <Select onValueChange={handleCategoryChange} value={category || ""}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select Category" />
           </SelectTrigger>
@@ -109,42 +109,13 @@ export default function SearchBar() {
             <SelectItem value="Electrical">Electrical</SelectItem>
             <SelectItem value="Cleaning">Cleaning</SelectItem>
           </SelectContent>
-        </Select>
-        {/*     <div className="flex items-center space-x-2">
-          <Checkbox
-            id="all"
-            checked={isAllSelected}
-            onCheckedChange={(checked) =>
-              handleCategoryChange("all", checked === true)
-            }
-          />
-          <Label htmlFor="all" className="cursor-pointer font-medium">
-            All Services
-          </Label>
-        </div>
-
-        {categoryServices
-          .filter((service) => service.id !== "all")
-          .map((service) => (
-            <div key={service.id} className="flex items-center space-x-2 ml-4">
-              <Checkbox
-                id={service.id}
-                checked={categoryServices.includes(service.id)}
-                onCheckedChange={(checked) =>
-                  handleCategoryChange(service.id, checked === true)
-                }
-              />
-              <Label htmlFor={service.id} className="cursor-pointer">
-                {service.label}
-              </Label>
-            </div>
-          ))}*/}
+        </Select> */}
       </div>
 
       {loading ? (
         <p>...Loading</p>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
           {services.map((service: any) => (
             <ServiceCard key={service.id} service={service} />
           ))}
