@@ -1,10 +1,14 @@
 "use client";
+
+/* import { authClient } from "@/lib/auth-client"; */
 import Link from "next/link";
 import { useState } from "react";
 
-export default function Navbar() {
+export default async function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const handleMenuClick = () => setIsOpen(!isOpen);
+  /* const { data: session, error } = await authClient.getSession(); */
+  /*  const session = "session"; */
   return (
     <nav className="bg-gray-900 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -85,14 +89,23 @@ export default function Navbar() {
                 About
               </Link>
             </li>
-            <li>
-              <Link
-                href="#"
-                className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
-              >
-                Sign Up Business
-              </Link>
-            </li>
+            {/*   <li>
+              {session ? (
+                <Link
+                  href="/"
+                  className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                >
+                  Logout
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                >
+                  Login
+                </Link>
+              )}
+            </li> */}
           </ul>
         </div>
       </div>

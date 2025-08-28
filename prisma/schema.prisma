@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
@@ -14,14 +13,196 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Model za profil firme
+// Sadrži specifične podatke za firme.
+model FirmProfile {
+  id              String      @id @default(cuid())
+  firmName        String
+  registrationId  String      @unique // Npr. PDV broj
+  description     String?
+  firmAddress     String?
+  firmPhone       String?
+  firmEmail       String?
+  
+  // Veza s glavnim korisničkim modelom
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id])
+}
+
+// Model za profil majstora (specijaliste)
+// Sadrži specifične podatke za majstore.
+model MasterProfile {
+  id              String      @id @default(cuid())
+  specialty       String      // Npr. "vodoinstalater", "električar"
+  yearsOfExperience Int?
+  bio             String?
+
+  // Veza s glavnim korisničkim modelom
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id])
+}
+
+// Enum za uloge korisnika
+enum Role {
+  Firma
+  Majstor
+  Korisnik
+}
+
+// Model za recenzije (komentare i ocjene)
+model Review {
+  id          String   @id @default(cuid())
+  rating      Int      @default(0) // Ocjena od 1-5 (preporučeno)
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  // Veza sa korisnikom koji je ostavio recenziju
+  reviewerId  String
+  reviewer    User     @relation(fields: [reviewerId], references: [id])
+
+  // Veza sa uslugom na koju se recenzija odnosi
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id])
+}
+
+// Prošireni model za uslugu.
+// Sadrži sve potrebne informacije o usluzi.
 model Service {
-  id        String   @id @default(cuid())
-  name      String
-  category  String
-  address   String
-  phone     String
-  email     String
-  rating    Float
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique // Dodato za kreiranje user-friendly URL-ova
+  category    String
+  address     String
+  description String
+  rating      Float     @default(0.0) // Dodato
+  contact     String    // Dodato za e-mail, telefon, itd.
+  providerBio String?   // Dodato za biografiju pružaoca usluge (npr. majstora)
+  images      String[]  // Dodato za niz URL-ova slika
+  rate        Float     // Dodato za cijenu usluge
+  rateType    RateType  // Korištenje enuma za tip naplate (hourly, fixed, project)
+  
+  // Veza s korisnikom (provajderom)
+  providerId  String
+  provider    User      @relation(fields: [providerId], references: [id])
+
+  // Veza s recenzijama (komentarima i ocjenama)
+  reviews     Review[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Enum za tip naplate
+enum RateType {
+  hourly
+  fixed
+  project
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  password String
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+  firmProfile FirmProfile?
+  masterProfile MasterProfile?
+
+  // Opciona veza s uslugama koje pruža (ako je uloga "Firma" ili "Majstor")
+  reviews Review[]
+   // Opciona veza s recenzijama koje je ostavio
+  services Service[]
+  
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  username        String?
+  displayUsername String?
+
+  @@map("user")
+  @@unique([username])
+}
+
+model Account {
+  userId                String
+  type                  String
+  provider              String
+  providerAccountId     String
+  refresh_token         String?
+  access_token          String?
+  expires_at            Int?
+  token_type            String?
+  scope                 String?
+  id_token              String?
+  session_state         String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  password              String?
+
+  @@id([provider, providerAccountId])
+  @@map("account")
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  expiresAt    DateTime
+  token        String
+  ipAddress    String?
+  userAgent    String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+// Optional for WebAuthn support
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }
