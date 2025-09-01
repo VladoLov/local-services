@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import ServiceCard from "./ServiceCard";
 import { ca } from "zod/locales";
+import { authClient } from "@/lib/auth-client";
 
 type Service = {
   name: string;
@@ -54,7 +55,6 @@ export default function SearchBar() {
           className="w-full max-w-md p-2 mb-6 border border-gray-300 rounded-lg"
         />
       </div>
-
       {loading ? (
         <p>...Loading</p>
       ) : (

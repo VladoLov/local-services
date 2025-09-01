@@ -27,6 +27,8 @@ model FirmProfile {
   // Veza s glavnim korisničkim modelom
   userId          String      @unique
   user            User        @relation(fields: [userId], references: [id])
+
+  @@map("firm-profile")
 }
 
 // Model za profil majstora (specijaliste)
@@ -40,6 +42,8 @@ model MasterProfile {
   // Veza s glavnim korisničkim modelom
   userId          String      @unique
   user            User        @relation(fields: [userId], references: [id])
+
+  @@map("master-profile")
 }
 
 // Enum za uloge korisnika
@@ -63,6 +67,8 @@ model Review {
   // Veza sa uslugom na koju se recenzija odnosi
   serviceId   String
   service     Service  @relation(fields: [serviceId], references: [id])
+
+  @@map("review")
 }
 
 // Prošireni model za uslugu.
@@ -90,6 +96,8 @@ model Service {
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("service")
 }
 
 // Enum za tip naplate
@@ -103,14 +111,14 @@ model User {
   id            String          @id @default(cuid())
   name          String?
   email         String          @unique
-  emailVerified DateTime?
+  emailVerified Boolean
   image         String?
-  password String
+  
   accounts      Account[]
   sessions      Session[]
   
   // Optional for WebAuthn support
-  Authenticator Authenticator[]
+  
   firmProfile FirmProfile?
   masterProfile MasterProfile?
 
@@ -118,6 +126,8 @@ model User {
   reviews Review[]
    // Opciona veza s recenzijama koje je ostavio
   services Service[]
+
+ 
   
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -129,71 +139,38 @@ model User {
   @@unique([username])
 }
 
-model Account {
-  userId                String
-  type                  String
-  provider              String
-  providerAccountId     String
-  refresh_token         String?
-  access_token          String?
-  expires_at            Int?
-  token_type            String?
-  scope                 String?
-  id_token              String?
-  session_state         String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accountId             String
-  providerId            String
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  password              String?
-
-  @@id([provider, providerAccountId])
-  @@map("account")
-}
-
 model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  expiresAt    DateTime
-  token        String
-  ipAddress    String?
-  userAgent    String?
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
 }
 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
 
-  @@id([identifier, token])
-}
-// Optional for WebAuthn support
-
-model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
-  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, credentialID])
+  @@map("account")
 }
 
 model Verification {

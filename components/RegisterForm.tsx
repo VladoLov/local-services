@@ -3,7 +3,7 @@
 import React from "react";
 import { toast } from "sonner";
 import { useFormStatus } from "react-dom";
-import { signUp } from "@/lib/action";
+import { signUp } from "@/lib/actions/server";
 
 // Komponenta za status forme
 function SubmitButton() {
