@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 export const signUp = async (formData: FormData) => {
   const name = formData.get("name") as string;
@@ -69,3 +71,26 @@ export const signIn = async (formData: FormData) => {
     return { success: false, message: "Prijava nije uspjela." };
   }
 };
+
+export async function POST(req: Request) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user.id) return new Response("Unauthorized", { status: 401 });
+  const userId = session.user.id;
+  const body = await req.json();
+  await prisma.service.create({
+    data: {
+      name: body.name,
+      category: body.category,
+      slug: body.slug,
+      address: body.address,
+      description: body.description,
+      contact: body.contact,
+      rate: body.rate,
+      rateType: body.rateType,
+      provider: {
+        connect: { id: userId },
+      },
+    },
+  });
+  return new Response("Service created", { status: 200 });
+}

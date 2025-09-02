@@ -100,7 +100,7 @@ export default function Navbar() {
                 </Link>
               ) : (
                 <Link
-                  href="/auth/register"
+                  href="/auth/signin"
                   className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
                 >
                   Login

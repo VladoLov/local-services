@@ -8,7 +8,7 @@ import { db } from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function Home() {
-  const services = await db.service.findMany();
+  /*  const services = await db.service.findMany(); */
 
   /*  const { data: session } = await authClient.getSession(); */
   const session = await auth.api.getSession({ headers: await headers() });
