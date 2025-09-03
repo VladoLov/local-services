@@ -91,6 +91,14 @@ export default function Navbar() {
               </Link>
             </li>
             <li>
+              <Link
+                href="/addservice"
+                className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+              >
+                Dodaj Uslugu
+              </Link>
+            </li>
+            <li>
               {session ? (
                 <Link
                   href="/"

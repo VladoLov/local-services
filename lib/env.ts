@@ -6,6 +6,9 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     NEXT_PUBLIC_BASE_URL: z.string().url(),
     /*   OPEN_AI_API_KEY: z.string().min(1), */
+    NEXT_PUBLIC_URL_IMAGEKIT_ENDPOINT: z.string().min(1),
+    NEXT_PUBLIC_IMAGEKIT_KEY: z.string().min(1),
+    IMAGEKIT_PRIVATE_KEY: z.string().min(1),
   },
 
   /**
@@ -16,6 +19,8 @@ export const env = createEnv({
 
   client: {
     PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
+    PUBLIC_URL_IMAGEKIT_ENDPOINT: z.string().min(1),
+    PUBLIC_IMAGEKIT_KEY: z.string().min(1),
   },
 
   /**
