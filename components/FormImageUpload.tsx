@@ -172,10 +172,10 @@ const authenticator = async () => {
     </>
   );
 } */
-export default function ImageUpload({
+export default function FormImageUpload({
   onUploaded,
 }: {
-  onUploaded: (urls: string[]) => void;
+  onUploaded: () => void;
 }) {
   const [progress, setProgress] = useState(0);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
@@ -200,20 +200,25 @@ export default function ImageUpload({
         publicKey,
         file,
         fileName: file.name,
+        folder: "/poslovi",
         onProgress: (event) => setProgress((event.loaded / event.total) * 100),
       });
 
       // Ako `uploadResponse.url` postoji, koristi ga
-      if (uploadResponse.url) {
+      /*  if (uploadResponse.url) {
         urls.push(uploadResponse.url);
       } else if (uploadResponse.filePath) {
+        // Ako nema url, konstruiši ga sam
+        urls.push(`${imagekitUrlEndpoint}/${uploadResponse.filePath}`);
+      } */
+      if (uploadResponse.filePath) {
         // Ako nema url, konstruiši ga sam
         urls.push(`${imagekitUrlEndpoint}/${uploadResponse.filePath}`);
       }
     }
 
     setUploadedUrls((prev) => [...prev, ...urls]);
-    onUploaded(urls); // pošalji natrag parent komponenti
+    onUploaded(); // pošalji natrag parent komponenti
   };
 
   return (

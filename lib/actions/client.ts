@@ -157,3 +157,69 @@ export async function createServiceAction(data: {
     return { success: false, message: "Greška pri kreiranju servisa." };
   }
 }
+
+export async function addImageToService(serviceId: string, imageUrl: string) {
+  // Ensure your Prisma model defines `images` as string[] (Postgres text[]).
+  // Example: images String[] @default([])
+  const updated = await prisma.service.update({
+    where: { id: serviceId },
+    data: {
+      images: { push: imageUrl },
+    },
+  });
+
+  return updated;
+}
+
+export async function addMultipleImageToService(
+  serviceId: string,
+  urls: string[]
+) {
+  const service = await prisma.service.findUnique({
+    where: { id: serviceId },
+    select: { images: true },
+  });
+  if (!service) {
+    throw new Error("Service not found");
+  }
+  // Assuming your schema has: images String[] (Postgres array in Neon)
+
+  const existingImages = service.images || [];
+  const combinedImages = [...existingImages, ...urls];
+  return await prisma.service.update({
+    where: { id: serviceId },
+
+    data: { images: { set: combinedImages } }, // replace with new array
+  });
+}
+
+export async function getServiceByUser(userId: string) {
+  return await prisma.service.findMany({
+    where: {
+      provider: {
+        id: userId,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+}
+export async function getMostRatedServices() {
+  return await prisma.service.findMany({
+    where: {},
+    select: {
+      id: true,
+      name: true,
+      rating: true,
+      images: true,
+      description: true,
+      category: true,
+    },
+    orderBy: {
+      rating: "desc",
+    },
+    take: 5,
+  });
+}

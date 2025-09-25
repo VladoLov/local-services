@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth/api";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -60,12 +61,26 @@ export const signIn = async (formData: FormData) => {
   try {
     await auth.api.signInEmail({
       headers: await headers(),
-      body: { email, password },
+      body: { email, password, callbackURL: "/" },
     });
 
-    return { success: true, message: "Uspješna prijava!" };
+    // return { success: true, message: "Uspješna prijava!" }; //old way
+    // Best Practice: Redirect the user to a new page upon successful sign-in.
+    // This is the most efficient way to handle navigation in a Server Action.
   } catch (error) {
     console.error("Greška pri prijavi:", error);
     return { success: false, message: "Prijava nije uspjela." };
+  }
+  revalidatePath("/"); // Revalidate the homepage or any other path as needed.
+  redirect("/"); // ⚠️ Replace '/home' with your desired redirect path.
+};
+
+export const signOut = async () => {
+  try {
+    await auth.api.signOut({ headers: await headers() });
+    revalidatePath("/"); // Revalidate the homepage or any other path as needed.
+    redirect("/"); // ⚠️ Replace '/home' with your desired redirect path.
+  } catch (error) {
+    console.error("Sign-out failed:", error);
   }
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useActionState, useEffect, useState } from "react";
@@ -30,7 +30,9 @@ import { useFormStatus } from "react-dom";
 // Ostavljena u istom fajlu da bi se izbjegle greške sa importima
 
 import { createServiceAction } from "@/lib/actions/client";
-import ImageUpload from "@/components/ImageUpload";
+import FormImageUpload from "@/components/FormImageUpload";
+import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/dist/server/api-utils";
 
 // Zod šema za validaciju
 const serviceSchema = z.object({
@@ -59,8 +61,11 @@ function SubmitButton() {
 export default function ServiceForm() {
   const form = useForm({
     resolver: zodResolver(serviceSchema),
-    defaultValues: { images: [] },
+    defaultValues: { images: [], slug: "", name: "", rate: 0 },
   });
+
+  const { data: session } = authClient.useSession();
+
   const [images, setImages] = useState<string[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -82,6 +87,31 @@ export default function ServiceForm() {
       setErrorMessage(response.message);
     }
   };
+
+  /*  const nameValue = useWatch({
+    control: form.control,
+    name: "name",
+  }); */
+
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+  // Watch the name field and auto-update slug
+  // Watch the name field and auto-update slug
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (name === "name" && type === "change") {
+        const generatedSlug = generateSlug(value.name || "");
+        form.setValue("slug", generatedSlug);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   /*   useEffect(() => {
     if (state) {
       if (state.success) {
@@ -94,6 +124,8 @@ export default function ServiceForm() {
       }
     }
   }, [state, form]); */
+  if (!session) return null;
+
   return (
     <Card className="p-8 max-w-2xl mx-auto my-10">
       <div className="text-center mb-6">
@@ -107,9 +139,9 @@ export default function ServiceForm() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Naziv servisa</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Npr. Moler" {...field} />
+                  <Input placeholder="Enter name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -258,12 +290,21 @@ export default function ServiceForm() {
               {images.length} slika dodano ✓
             </p>
           )} */}
-          <ImageUpload
-            onUploaded={(urls) => {
-              setImages((prev) => [...prev, ...urls]);
-              form.setValue("images", [...images, ...urls]); // ✅ keeps RHF in sync
+          {/*   <FormImageUpload
+            onUploaded={() => {
+              setImages((prev) => [...prev]);
+              form.setValue("images", [...images]); // ✅ keeps RHF in sync
             }}
-          />
+          /> */}
+          {/*  <ImageUpload
+            onUploaded={(urls) => {
+              setImages((prev) => {
+                const merged = [...prev, ...urls];
+                form.setValue("images", merged, { shouldDirty: true });
+                return merged;
+              });
+            }}
+          /> */}
 
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Slanje..." : "Kreiraj servis"}

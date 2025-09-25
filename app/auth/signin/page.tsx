@@ -13,10 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { signIn } from "@/lib/actions/server";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useActionState } from "react";
+import Router from "next/router";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
@@ -30,12 +33,14 @@ export default function SignIn() {
       password: "",
     },
   });
-
+  const router = useRouter();
+  const { data: session, refetch } = useSession();
   /*  const [state, formAction] = useActionState(
     (prevState: { success: boolean } | undefined, formData: FormData) =>
       signIn(formData),
     { success: false }
   ); */
+
   const [state, formAction] = useActionState(
     async (
       prevState: { success: boolean; message: string },
@@ -45,6 +50,15 @@ export default function SignIn() {
     },
     { success: false, message: "" } // ✅ include message
   );
+
+  useEffect(() => {
+    if (state?.success === true) {
+      refetch();
+      // Reset form only on successful submission
+      router.push("/"); // Redirect to homepage on successful sign-in
+      router.refresh();
+    }
+  }, [state?.success, router, refetch]);
 
   return (
     <Card className="max-w-sm w-full mx-auto ">
@@ -92,10 +106,11 @@ export default function SignIn() {
           />
           {/*   <Button type="submit">Submit</Button> */}
           <ButtonWithLoader />
-          {state?.success && (
-            <div className="mt-1 flex justify-center text-center">
-              <span className="px-4 py-2 rounded-lg bg-green-700 font-medium shadow-sm border border-green-300">
-                Registration successful
+          {/* ⚠️ This is the new part for displaying the error message */}
+          {state?.message && (
+            <div className="mt-4 text-center">
+              <span className="px-4 py-2 rounded-lg bg-red-600 font-medium shadow-sm border border-red-300 text-white">
+                {state.message}
               </span>
             </div>
           )}

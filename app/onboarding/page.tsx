@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckIcon } from "@radix-ui/react-icons";
+/* import { CheckIcon } from "@radix-ui/react-icons"; */
 
 export default function OnboardingPage() {
   const [selectedRole, setSelectedRole] = useState(null);

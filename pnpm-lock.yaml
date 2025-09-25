@@ -53,6 +53,9 @@ importers:
       framer-motion:
         specifier: ^12.23.12
         version: 12.23.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      imagekitio-react:
+        specifier: ^4.3.0
+        version: 4.3.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       lucide-react:
         specifier: ^0.542.0
         version: 0.542.0(react@19.1.0)
@@ -1936,6 +1939,15 @@ packages:
   ignore@7.0.5:
     resolution: {integrity: sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg==}
     engines: {node: '>= 4'}
+
+  imagekit-javascript@3.1.0:
+    resolution: {integrity: sha512-56YmmOg6vKarIg4A41E9T08qQ2ri8862AYU/Ykhrbr9Cd8i6BIeKkroR16cmsNYFOIoLk35/O7b8o7I8DoyGaQ==}
+
+  imagekitio-react@4.3.0:
+    resolution: {integrity: sha512-IM9bbyJeznkMiCQyahzIj8c8r6xM9EwQj1Hddws7D62Sb9LnKdR1BqhEH/y5oc6lgvRlWDr7SoFIocZneFwfUg==}
+    peerDependencies:
+      react: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -4675,6 +4687,15 @@ snapshots:
   ignore@5.3.2: {}
 
   ignore@7.0.5: {}
+
+  imagekit-javascript@3.1.0: {}
+
+  imagekitio-react@4.3.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      imagekit-javascript: 3.1.0
+      prop-types: 15.8.1
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   import-fresh@3.3.1:
     dependencies:

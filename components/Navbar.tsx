@@ -3,13 +3,49 @@
 /* import { authClient } from "@/lib/auth-client"; */
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/actions/server";
 
-export default function Navbar() {
+import { auth } from "@/lib/auth";
+
+type Session = typeof auth.$Infer.Session;
+
+export default function Navbar({ session }: { session: Session | null }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Track loading state
   const handleMenuClick = () => setIsOpen(!isOpen);
-  const { data: session } = authClient.useSession();
+  /* const { data: session, isPending, refetch } = authClient.useSession(); */
 
+  /* const signOut = authClient.signOut; */
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+
+    router.push("/"); // Refresh the page to update the UI after sign-out
+  };
+
+  // Use useEffect to handle session changes and force re-render
+  /*     useEffect(() => {
+    if (session === true) {
+      setIsLoading(true); // Wait until session status is fully loaded
+    } else if ( === false) {
+      setIsLoading(false); // Session has been determined
+    }
+  }, [isPending]); // This hook tracks the session status changes */
+
+  // This ensures the UI is always in sync with the session state
+  /* useEffect(() => {
+    if (session) {
+      console.log("User logged in:", session.user);
+    } else {
+      console.log("User logged out.");
+    }
+  }, [session]); // Only rerender when session changes */
+
+  /*  if (isLoading) return null; */
   return (
     <nav className="bg-gray-900 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -90,29 +126,34 @@ export default function Navbar() {
                 About
               </Link>
             </li>
-            <li>
-              <Link
-                href="/addservice"
-                className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
-              >
-                Dodaj Uslugu
-              </Link>
-            </li>
+            {session ? (
+              <li>
+                <Link
+                  href="/addservice"
+                  className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                >
+                  Dodaj Uslugu
+                </Link>
+              </li>
+            ) : null}
             <li>
               {session ? (
-                <Link
-                  href="/"
+                <Button
+                  /*    onClick={handleSignOut} */
+                  /*  onClick={() => {
+                    signOut();
+                   
+                    router.refresh(); // Redirect to home after sign-out
+                  }} */
+                  onClick={handleSignOut}
                   className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
                 >
                   Logout
-                </Link>
+                </Button>
               ) : (
-                <Link
-                  href="/auth/register"
-                  className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
-                >
-                  Login
-                </Link>
+                <Button className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300">
+                  <Link href="/auth/signin">Login</Link>
+                </Button>
               )}
             </li>
           </ul>
