@@ -1,16 +1,18 @@
 import { getMostRatedServices } from "@/lib/actions/client";
 import React from "react";
 import ImageComponent from "./ImageComponent";
+import Link from "next/link";
 
 export default async function MostPopularServices() {
   const services = await getMostRatedServices();
-  console.log(services);
+
   return (
-    <div className="overflow-hidden w-full relative">
+    <div className="overflow-hidden container mx-auto relative carousel-container">
       <div className="flex w-max animate-scroll-left">
         {/* We duplicate the services list to create a seamless loop */}
         {[...services, ...services].map((service, index) => (
-          <div
+          <Link
+            href={`/services/${service.id}`}
             key={`${service.id}-${index}`}
             className="flex-shrink-0 w-80 m-4 rounded-lg shadow-lg overflow-hidden transition-transform duration-300 transform hover:scale-105"
           >
@@ -30,7 +32,7 @@ export default async function MostPopularServices() {
                 {service.description}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

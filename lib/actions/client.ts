@@ -223,3 +223,18 @@ export async function getMostRatedServices() {
     take: 5,
   });
 }
+
+export async function getMostPopularCategories() {
+  return await prisma.service.groupBy({
+    by: ["category"],
+    _count: {
+      category: true,
+    },
+    orderBy: {
+      _count: {
+        category: "desc",
+      },
+    },
+    take: 6,
+  });
+}

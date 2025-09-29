@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { db } from "@/lib/prisma";
 import Link from "next/link";
 import MostPopularServices from "@/components/MostPopularServices";
+import HeroSection from "@/components/HeroSection";
 
 export default async function Home() {
   const services = await db.service.findMany();
@@ -19,12 +20,13 @@ export default async function Home() {
         <h1 className="text-3xl font-bold mb-4">Local Services</h1>
         <h2>Welcome, please login</h2>
         <Link href="/signin">Login</Link>
+        <HeroSection />
       </div>
     );
   }
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-4">Local Services</h1>
 
       {session ? (
@@ -39,8 +41,9 @@ export default async function Home() {
           <ServiceCard key={service.id} service={service} />
         ))}
       </div> */}
-      <SearchBar />
-      <MostPopularServices />
+      {/*  <SearchBar />
+      <MostPopularServices /> */}
+      <HeroSection />
     </div>
   );
 }

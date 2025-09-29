@@ -1,88 +1,159 @@
-"use client";
+import React from "react";
+import { Suspense } from "react";
+import ServicesClient from "./ServiceClient";
+import { db } from "@/lib/prisma";
 
-import FilterCheckboxes from "@/components/FilterCheckboxes";
-import SearchInput from "@/components/SearchInput";
-import ServiceResults from "@/components/ServiceResults";
-import { searchServices } from "@/lib/db/services";
-import { useEffect, useState } from "react";
+// This is a server component that fetches initial data
+export default async function ServicesPage(props: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  // Extract search parameters
+  const searchParams = await props.searchParams;
+  const category =
+    typeof searchParams.category === "string"
+      ? searchParams.category
+      : undefined;
+  const location =
+    typeof searchParams.location === "string"
+      ? searchParams.location
+      : undefined;
+  const minPrice =
+    typeof searchParams.minPrice === "string"
+      ? parseFloat(searchParams.minPrice)
+      : undefined;
+  const maxPrice =
+    typeof searchParams.maxPrice === "string"
+      ? parseFloat(searchParams.maxPrice)
+      : undefined;
+  const minRating =
+    typeof searchParams.minRating === "string"
+      ? parseFloat(searchParams.minRating)
+      : undefined;
+  const rateType =
+    typeof searchParams.rateType === "string"
+      ? (searchParams.rateType as any)
+      : undefined;
+  const sortField =
+    typeof searchParams.sortField === "string"
+      ? (searchParams.sortField as any)
+      : "rating";
+  const sortDirection =
+    typeof searchParams.sortDirection === "string"
+      ? (searchParams.sortDirection as any)
+      : "desc";
 
-type Service = {
-  name: string;
-  id: string;
-  category: string;
-  address: string;
-  phone: string;
-  email: string;
-  rating: number;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-};
+  // Build where clause for Prisma
+  const whereClause: any = {};
 
-const categoryServices = [
-  { id: "Plumbing", label: "Plumbing" },
-  { id: "Electrical", label: "Electrical" },
-  { id: "Cleaning", label: "Cleaning" },
-  { id: "Transport", label: "Transport" },
-  { id: "Beauty", label: "Beauty" },
-  { id: "Childcare", label: "Childcare" },
-];
+  if (category) {
+    whereClause.category = category;
+  }
 
-export default function ServicesPage() {
-  const [query, setQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(false);
+  if (location) {
+    whereClause.address = {
+      contains: location,
+      mode: "insensitive",
+    };
+  }
 
-  // Add a state for the initial load
-  const [initialLoad, setInitialLoad] = useState(true);
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    whereClause.rate = {};
+    if (minPrice !== undefined) whereClause.rate.gte = minPrice;
+    if (maxPrice !== undefined) whereClause.rate.lte = maxPrice;
+  }
 
-  // This useEffect runs only once when the component mounts
-  useEffect(() => {
-    async function getInitialServices() {
-      setLoading(true);
-      // Fetch all services with an empty query and categories array
-      const initialServices = await searchServices("", []);
-      setServices(initialServices);
-      setLoading(false);
-      setInitialLoad(false);
-    }
-    getInitialServices();
-  }, []); // T
+  if (minRating !== undefined) {
+    whereClause.rating = {
+      gte: minRating,
+    };
+  }
 
-  const handleSearch = async (searchQuery: string, categories: string[]) => {
-    setLoading(true);
+  if (rateType) {
+    whereClause.rateType = rateType;
+  }
 
-    const results = await searchServices(searchQuery, categories);
-    setServices(results);
-    setLoading(false);
-  };
+  // Build orderBy clause
+  const orderBy: any = {};
+  if (sortField === "rating") {
+    orderBy.rating = sortDirection;
+  } else if (sortField === "rate") {
+    orderBy.rate = sortDirection;
+  } else if (sortField === "createdAt") {
+    orderBy.createdAt = sortDirection;
+  }
 
-  const handleQueryChange = (newQuery: string) => {
-    setQuery(newQuery);
-    handleSearch(newQuery, selectedCategories);
-  };
+  try {
+    // Fetch services with filters and sorting
+    const services = await db.service.findMany({
+      where: whereClause,
+      orderBy,
+      include: {
+        provider: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        reviews: {
+          include: {
+            /*  user: {
+              select: {
+                name: true,
+              },
+            }, */
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 5,
+        },
+      },
+    });
 
-  const handleCategoryChange = (newCategories: string[]) => {
-    setSelectedCategories(newCategories);
-    handleSearch(query, newCategories);
-  };
+    // Get unique categories for filter
+    const categories = await db.service.findMany({
+      select: {
+        category: true,
+      },
+      distinct: ["category"],
+    });
 
-  return (
-    <div className="flex flex-col justify-center items-center p-6">
-      <h1 className="text-3xl font-bold mb-4">Usluge</h1>
-      <SearchInput query={query} onQueryChange={handleQueryChange} />
-      <div className="grid grid-rows-1 md:grid-cols-4 w-full gap-4">
-        <div className="col-span-1 ">
-          <FilterCheckboxes
-            categories={categoryServices}
-            selectedCategories={selectedCategories}
-            onCategoryChange={handleCategoryChange}
+    const uniqueCategories = categories.map((c) => c.category);
+
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Suspense fallback={<div className="p-8">Loading services...</div>}>
+          <ServicesClient
+            initialServices={services}
+            categories={uniqueCategories}
+            initialFilters={{
+              category,
+              location,
+              minPrice,
+              maxPrice,
+              minRating,
+              rateType,
+            }}
+            initialSort={{
+              field: sortField,
+              direction: sortDirection,
+            }}
           />
-        </div>
-        <div className="col-span-3">
-          <ServiceResults services={services} loading={loading} />
+        </Suspense>
+      </div>
+    );
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Error Loading Services
+          </h1>
+          <p className="text-gray-600">Please try again later.</p>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }

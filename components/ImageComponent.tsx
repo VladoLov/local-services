@@ -11,7 +11,7 @@ export default function ImageComponent({ services }: { services: any }) {
   const getImagePath = (url: any) => {
     if (!url) return null;
     const urlEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
-    console.log("urlEndpoint", urlEndpoint); // Your URL endpoint
+    // console.log("urlEndpoint", urlEndpoint); // Your URL endpoint
     // The path is the part after the urlEndpoint
     return url.replace(urlEndpoint, "");
   };
@@ -22,9 +22,10 @@ export default function ImageComponent({ services }: { services: any }) {
     <div>
       <div className="relative w-full h-48">
         <Image
+          urlEndpoint={imagePath}
           // Pass the extracted path here.
           // The Image component will construct the full URL for you.
-          src={imagePath || "/path/to/default-image.jpg"}
+          src={imagePath || "no image"}
           alt={services.name}
           layout="fill"
           objectFit="cover"

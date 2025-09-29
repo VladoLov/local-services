@@ -33,11 +33,12 @@ import { createServiceAction } from "@/lib/actions/client";
 import FormImageUpload from "@/components/FormImageUpload";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/dist/server/api-utils";
+import { CATEGORIES, categoryEnum } from "@/lib/schemas/category";
 
 // Zod šema za validaciju
 const serviceSchema = z.object({
   name: z.string().min(2, "Naziv servisa je obavezan."),
-  category: z.string().min(1, "Kategorija je obavezna."),
+  category: categoryEnum,
   slug: z.string().min(2, "Slug je obavezan."),
   address: z.string().min(2, "Adresa je obavezna."),
   description: z.string().min(10, "Opis mora imati najmanje 10 znakova."),
@@ -164,12 +165,11 @@ export default function ServiceForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="vodoinstalater">
-                      Vodoinstalater
-                    </SelectItem>
-                    <SelectItem value="elektricar">Električar</SelectItem>
-                    <SelectItem value="cistac">Čistač</SelectItem>
-                    <SelectItem value="majstor">Majstor</SelectItem>
+                    {CATEGORIES.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

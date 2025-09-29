@@ -41,24 +41,25 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --extend: {
-      keyframes: {
-         "marquee-x": {
-          from: { transform: "translateX(0)" },
-          to: { transform: "translateX(calc(-100% - var(--gap)))" },
-        },
-        "marquee-y": {
-          from: { transform: "translateY(0)" },
-          to: { transform: "translateY(calc(-100% - var(--gap)))" },
-        },
-      },
-      animation: {
-        "marquee-horizontal": "marquee-x var(--duration) infinite linear",
-        "marquee-vertical": "marquee-y var(--duration) linear infinite",
-        },
-    },
 }
 
+@layer utilities {
+  .animate-scroll-left {
+    animation: scroll-left 40s linear infinite;
+  }
+  .carousel-container:hover .animate-scroll-left {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
