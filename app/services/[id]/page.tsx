@@ -1,10 +1,11 @@
 import ImageComponent from "@/components/ImageComponent";
 import MultipleImageComponent from "@/components/MultipleImageComponent";
+import ReviewForm from "@/components/ReviewForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
-import work from "@/public/eric-wang-um.webp";
+
 import {
   Calendar,
   CheckCircle,
@@ -14,30 +15,23 @@ import {
   Star,
   User,
 } from "lucide-react";
-import Image from "next/image";
+
 import React from "react";
-/* interface ServiceCardProps {
-  service: {
-    id: string;
-    name: string;
-    slug: string;
-    category: string;
-    address: string;
-    description: string;
-    rating: number;
-    contact: string;
-    providerBio: string;
-    images: string[];
-    rate: number;
-    rateType: "hourly" | "fixed" | "project";
-  };
-}
- */
+import ContactCard from "./_ContactProvider";
 
 export default async function page({ params }: any) {
   const { id } = await params;
 
-  const service = await db.service.findUnique({ where: { id: id } });
+  const service = await db.service.findUnique({
+    where: { id: id },
+    include: {
+      reviews: {
+        include: { reviewer: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
   // Handle the case where the service is not found
   if (!service) {
     return (
@@ -143,10 +137,10 @@ export default async function page({ params }: any) {
                       <div className="flex items-center">
                         <Star className="h-5 w-5 text-yellow-400 fill-current" />
                         <span className="ml-1 font-semibold">
-                          {service.rating}
+                          {service.rating?.toFixed(1)}
                         </span>
                         <span className="text-gray-600 ml-1">
-                          ({/* {service.reviews.length} */} 15 reviews)
+                          ({service.reviews.length | 0} )
                         </span>
                       </div>
                     </div>
@@ -168,13 +162,6 @@ export default async function page({ params }: any) {
                         key={index}
                         className="relative h-48 rounded-lg overflow-hidden"
                       >
-                        {/*   <Image
-                          urlEndpoint={image.url}
-                          src={image.url}
-                          alt={`Past work ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        /> */}
                         <MultipleImageComponent service={service} />
                       </div>
                     ))}
@@ -182,6 +169,41 @@ export default async function page({ params }: any) {
                 </CardContent>
               </Card>
             )}
+            {/* Reviews Section */}
+            <Card className="mt-6">
+              <CardContent className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
+
+                {service.reviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {service.reviews.map((review) => (
+                      <div key={review.id} className="border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                          <span className="ml-2 font-semibold">
+                            {review.reviewer.name}
+                          </span>
+                        </div>
+                        <p className="text-gray-700">{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">No reviews yet. Be the first!</p>
+                )}
+
+                <ReviewForm serviceId={service.id} />
+              </CardContent>
+            </Card>
             {/* <Card>
               <CardContent className="p-6">
                 <h2 className="text-2xl font-bold mb-4">Past Work Examples</h2>
@@ -202,8 +224,8 @@ export default async function page({ params }: any) {
           {/* Sidebar */}
           <div>
             {/* Contact Card */}
-            <Card className="sticky top-6 mb-6">
-              <CardContent className="p-6">
+            {/* <Card className="sticky top-6 mb-6">
+                 <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">Contact Provider</h3>
                 <div className="flex items-center mb-4">
                   <Phone className="h-5 w-5 text-blue-600 mr-2" />
@@ -217,11 +239,12 @@ export default async function page({ params }: any) {
                 <Button variant="outline" className="w-full">
                   Request Quote
                 </Button>
-              </CardContent>
-            </Card>
+              </CardContent> 
+            </Card>*/}
+            <ContactCard contact={service.contact} />
 
             {/* Service Highlights */}
-            <Card>
+            <Card className="mt-6">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">Service Highlights</h3>
                 <ul className="space-y-3">

@@ -4,6 +4,7 @@ import { APIError } from "better-auth/api";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { db } from "../prisma";
 
 export const signUp = async (formData: FormData) => {
   const name = formData.get("name") as string;
@@ -84,3 +85,14 @@ export const signOut = async () => {
     console.error("Sign-out failed:", error);
   }
 };
+
+export async function updateServiceRating(serviceId: string) {
+  const avg = await db.review.aggregate({
+    where: { serviceId },
+    _avg: { rating: true },
+  });
+  await db.service.update({
+    where: { id: serviceId },
+    data: { rating: avg._avg.rating ?? 0 },
+  });
+}

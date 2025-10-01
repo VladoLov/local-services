@@ -95,19 +95,19 @@ export default async function ServicesPage(props: {
             email: true,
           },
         },
-        reviews: {
+        /*    reviews: {
           include: {
-            /*  user: {
+            user: {
               select: {
                 name: true,
               },
-            }, */
+            },
           },
           orderBy: {
             createdAt: "desc",
           },
           take: 5,
-        },
+        }, */
       },
     });
 
