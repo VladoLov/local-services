@@ -55,7 +55,7 @@ const ServiceCard = ({ service }: Props) => {
             {service.name}
           </h3>
           <div className="flex items-center text-gray-600 mb-2">
-            <User className="w-4 h-4 mr-2" />
+            {/* <User className="w-4 h-4 mr-2" /> */}
             {/*   <span className="text-sm">{service.provider.name}</span> */}
           </div>
           <div className="flex items-center text-gray-600">
@@ -94,7 +94,7 @@ const ServiceCard = ({ service }: Props) => {
         {/* Price */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <DollarSign className="w-4 h-4 text-green-600 mr-1" />
+            {/* <DollarSign className="w-4 h-4 text-green-600 mr-1" /> */}
             <span className="text-lg font-bold text-green-600">
               {formatPrice(service.rate, service.rateType)}
             </span>

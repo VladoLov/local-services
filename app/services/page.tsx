@@ -4,42 +4,44 @@ import ServicesClient from "./ServiceClient";
 import { db } from "@/lib/prisma";
 
 // This is a server component that fetches initial data
-export default async function ServicesPage(props: {
-  searchParams: { [key: string]: string | string[] | undefined };
+export default async function ServicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Extract search parameters
-  const searchParams = await props.searchParams;
+  // Await it once at the top
+  const params = await searchParams;
+
   const category =
-    typeof searchParams.category === "string"
-      ? searchParams.category
-      : undefined;
+    typeof params.category === "string" ? params.category : undefined;
+
   const location =
-    typeof searchParams.location === "string"
-      ? searchParams.location
-      : undefined;
+    typeof params.location === "string" ? params.location : undefined;
+
   const minPrice =
-    typeof searchParams.minPrice === "string"
-      ? parseFloat(searchParams.minPrice)
+    typeof params.minPrice === "string"
+      ? parseFloat(params.minPrice)
       : undefined;
+
   const maxPrice =
-    typeof searchParams.maxPrice === "string"
-      ? parseFloat(searchParams.maxPrice)
+    typeof params.maxPrice === "string"
+      ? parseFloat(params.maxPrice)
       : undefined;
+
   const minRating =
-    typeof searchParams.minRating === "string"
-      ? parseFloat(searchParams.minRating)
+    typeof params.minRating === "string"
+      ? parseFloat(params.minRating)
       : undefined;
+
   const rateType =
-    typeof searchParams.rateType === "string"
-      ? (searchParams.rateType as any)
-      : undefined;
+    typeof params.rateType === "string" ? (params.rateType as any) : undefined;
+
   const sortField =
-    typeof searchParams.sortField === "string"
-      ? (searchParams.sortField as any)
-      : "rating";
+    typeof params.sortField === "string" ? (params.sortField as any) : "rating";
+
   const sortDirection =
-    typeof searchParams.sortDirection === "string"
-      ? (searchParams.sortDirection as any)
+    typeof params.sortDirection === "string"
+      ? (params.sortDirection as any)
       : "desc";
 
   // Build where clause for Prisma
@@ -95,9 +97,9 @@ export default async function ServicesPage(props: {
             email: true,
           },
         },
-        /*    reviews: {
+        reviews: {
           include: {
-            user: {
+            reviewer: {
               select: {
                 name: true,
               },
@@ -107,7 +109,7 @@ export default async function ServicesPage(props: {
             createdAt: "desc",
           },
           take: 5,
-        }, */
+        },
       },
     });
 
@@ -125,7 +127,13 @@ export default async function ServicesPage(props: {
       <div className="min-h-screen bg-gray-50">
         <Suspense fallback={<div className="p-8">Loading services...</div>}>
           <ServicesClient
-            initialServices={services}
+            initialServices={services.map((service) => ({
+              ...service,
+              rateType:
+                typeof service.rateType === "string"
+                  ? service.rateType.toUpperCase()
+                  : service.rateType,
+            }))}
             categories={uniqueCategories}
             initialFilters={{
               category,

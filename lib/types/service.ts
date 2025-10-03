@@ -7,7 +7,6 @@ export interface Service {
   description: string;
   rating: number;
   contact: string;
-  providerBio?: string;
   images: string[];
   rate: number;
   rateType: "HOURLY" | "FIXED" | "PROJECT";

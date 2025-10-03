@@ -145,34 +145,10 @@ export default async function HeroSection() {
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-4xl mx-auto bg-white rounded-2xl p-6 shadow-2xl">
-              {/*   <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="What service do you need?"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-gray-900 text-lg rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                  />
-                </div>
-                <div className="flex-1 relative">
-                  <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Enter your location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-gray-900 text-lg rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                  />
-                </div>
-                <button className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 lg:min-w-[140px]">
-                  <span>Search</span>
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              </div>*/}
-              <SearchBar />
+            <div className="max-w-4xl mx-auto  rounded-2xl p-6 ">
+              <div className="flex flex-col lg:flex-row">
+                <SearchBar />
+              </div>
             </div>
           </div>
         </div>
