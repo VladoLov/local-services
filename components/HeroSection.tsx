@@ -18,6 +18,7 @@ import { getMostPopularCategories } from "@/lib/actions/client";
 import CategoryCardListClient from "./CategoryCardList";
 import { CategoryDisplayData } from "@/lib/types/categories";
 import { CATEGORY_MAPPING } from "@/lib/types/categoryMap";
+import MostPopularServices from "./MostPopularServices";
 
 /* const CATEGORY_MAPPING = {
   // Plumbing Services (Vodoinstalater)
@@ -217,6 +218,7 @@ export default async function HeroSection() {
               Verified experts with proven track records
             </p>
           </div>
+          <MostPopularServices />
 
           {/*  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredProviders.map((provider) => (
@@ -321,74 +323,6 @@ export default async function HeroSection() {
                 with our guarantee and insurance coverage.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-      {/* Trust & Safety */}
-      <section className="py-20 bg-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Your Peace of Mind is Our Priority
-            </h2>
-            <p className="text-xl text-blue-100">
-              We've got you covered with comprehensive safety measures
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">
-                Verified Professionals
-              </h3>
-              <p className="text-blue-100">
-                All professionals are background-checked, licensed, and insured
-                for your protection.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">Quality Guarantee</h3>
-              <p className="text-blue-100">
-                Not satisfied? We'll work to make it right or help you find
-                another professional.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">24/7 Support</h3>
-              <p className="text-blue-100">
-                Our customer support team is here to help you every step of the
-                way.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* CTA Section */}
-      <section className="py-20 bg-gray-900 text-white">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to Find Your Perfect Professional?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Join thousands of satisfied customers who found their ideal service
-            professional through ServiceHub.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-colors">
-              Find Professionals
-            </button>
-            <button className="border border-gray-400 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition-colors">
-              Become a Pro
-            </button>
           </div>
         </div>
       </section>

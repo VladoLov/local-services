@@ -1,4 +1,4 @@
-"use client";
+/* "use client";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,7 +27,7 @@ const schema = z.object({
   password: z.string().min(8, "Lozinka mora imati najmanje 8 znakova"),
 });
 
-/* type FormData = z.infer<typeof schema>; */
+//type FormData = z.infer<typeof schema>;
 
 export default function SignUpForm() {
   const form = useForm<z.infer<typeof schema>>({
@@ -60,75 +60,7 @@ export default function SignUpForm() {
       router.push("/onboarding");
     }
   }, [state, router]);
-  /*   const onSubmit = async (data: FormData) => {
-    try {
-      const res = await signUp.email({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        callbackURL: "/", // redirect after sign‑up
-      });
 
-      if (res.error) {
-        alert(res.error.message);
-      } else {
-        // Session cookie is already set — redirect or show success
-        window.location.href = "/";
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Sign‑up failed");
-    }
-  }; */
-
-  // return (
-  /*  <form
-      action={formAction}
-      className="max-w-md mx-auto space-y-4 p-6 bg-white rounded shadow"
-    >
-      <div>
-        <input
-          {...register("name")}
-          placeholder="Name"
-          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {errors.name && (
-          <p className="text-red-500 text-sm">{errors.name.message}</p>
-        )}
-      </div>
-
-      <div>
-        <input
-          {...register("email")}
-          placeholder="Email"
-          type="email"
-          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email.message}</p>
-        )}
-      </div>
-
-      <div>
-        <input
-          {...register("password")}
-          placeholder="Password"
-          type="password"
-          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm">{errors.password.message}</p>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-      >
-        {isSubmitting ? "Signing up..." : "Sign Up"}
-      </button>
-    </form> */
   return (
     <Card className="p-6">
       <Form {...form}>
@@ -210,6 +142,158 @@ function ButtonWithLoader() {
       type="submit"
       disabled={pending}
       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
+    >
+      {pending ? "Registracija..." : "Registracija"}
+    </Button>
+  );
+} */
+
+"use client";
+
+import { useActionState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
+import { signUp } from "@/lib/actions/server";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+const schema = z.object({
+  name: z.string().min(2, "Ime je obavezno"),
+  email: z.string().email("Unesite ispravan email"),
+  password: z.string().min(8, "Lozinka mora imati najmanje 8 znakova"),
+});
+
+export default function SignUpForm() {
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
+
+  const [state, formAction] = useActionState(
+    async (
+      state: { success: boolean; message: string } = {
+        success: false,
+        message: "",
+      },
+      formData: FormData
+    ) => await signUp(formData),
+    { success: false, message: "" }
+  );
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success) router.push("/onboarding");
+  }, [state, router]);
+
+  return (
+    <div className="flex flex-col gap-6 max-w-md mx-auto">
+      <Card className="overflow-hidden">
+        <CardContent className="grid p-8">
+          <Form {...form}>
+            <form action={formAction} className="space-y-6">
+              <div className="text-center mb-4">
+                <h1 className="text-2xl font-bold">Kreirajte nalog</h1>
+                <p className="text-muted-foreground">
+                  Istražite sve mogućnosti naše platforme
+                </p>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ime</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Unesite Vaše ime" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Unesite Vaš email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lozinka</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Unesite Vašu lozinku"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <ButtonWithLoader />
+
+              {state?.message && !state?.success && (
+                <div className="text-center mt-4">
+                  <span className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg border border-red-300 shadow-sm">
+                    {state.message}
+                  </span>
+                </div>
+              )}
+
+              <p className="text-center text-sm text-muted-foreground">
+                Već imate nalog?{" "}
+                <a href="/signin" className="underline hover:text-blue-600">
+                  Prijavite se
+                </a>
+              </p>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ButtonWithLoader() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
     >
       {pending ? "Registracija..." : "Registracija"}
     </Button>

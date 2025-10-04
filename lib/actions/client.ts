@@ -216,6 +216,7 @@ export async function getMostRatedServices() {
       images: true,
       description: true,
       category: true,
+      address: true,
     },
     orderBy: {
       rating: "desc",
