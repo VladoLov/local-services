@@ -1,20 +1,126 @@
 import Link from "next/link";
-import { Service } from "../lib/prisma/edge";
-
+//import { Service } from "../lib/prisma/edge";
+import {
+  Star,
+  MapPin,
+  Clock,
+  DollarSign,
+  User,
+  Phone,
+  Mail,
+} from "lucide-react";
+import { Service } from "@/lib/types/service";
 type Props = {
   service: Service;
 };
 const ServiceCard = ({ service }: Props) => {
+  const getRateTypeLabel = (rateType: string) => {
+    switch (rateType) {
+      case "HOURLY":
+        return "/hour";
+      case "FIXED":
+        return "fixed";
+      case "PROJECT":
+        return "/project";
+      default:
+        return "";
+    }
+  };
+
+  const formatPrice = (rate: number, rateType: string) => {
+    return `$${rate}${getRateTypeLabel(rateType)}`;
+  };
   return (
-    <div className="bg-white p-4 rounded shadow-md">
-      <Link href={`/services/${service.id}`}>
-        <h2 className="text-md md:text-xl font-bold">{service.name}</h2>
-        <p className="text-sm md:text-md text-gray-600">{service.category}</p>
-        <p className="text-sm md:text-md text-gray-600">{service.address}</p>
-        <p className="text-sm md:text-md text-gray-500">
-          Rating: {service.rating}
+    <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+      {/* Image */}
+      <div className="h-48 overflow-hidden relative">
+        <img
+          src={
+            service.images[0] ||
+            "https://images.pexels.com/photos/1249611/pexels-photo-1249611.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+          }
+          alt={service.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-gray-700">
+          {service.category}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        {/* Header */}
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+            {service.name}
+          </h3>
+          <div className="flex items-center text-gray-600 mb-2">
+            {/* <User className="w-4 h-4 mr-2" /> */}
+            {/*   <span className="text-sm">{service.provider.name}</span> */}
+          </div>
+          <div className="flex items-center text-gray-600">
+            <MapPin className="w-4 h-4 mr-2" />
+            <span className="text-sm">{service.address}</span>
+          </div>
+        </div>
+
+        {/* Rating */}
+        <div className="flex items-center mb-4">
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`w-4 h-4 ${
+                  i < Math.floor(service.rating)
+                    ? "text-yellow-400 fill-current"
+                    : "text-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="ml-2 text-sm font-medium text-gray-700">
+            {service.rating.toFixed(1)}
+          </span>
+          {/*      <span className="ml-1 text-sm text-gray-500">
+            ({service.reviews.length} reviews)
+          </span> */}
+        </div>
+
+        {/* Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          {service.description}
         </p>
-      </Link>
+
+        {/* Price */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            {/* <DollarSign className="w-4 h-4 text-green-600 mr-1" /> */}
+            <span className="text-lg font-bold text-green-600">
+              {formatPrice(service.rate, service.rateType)}
+            </span>
+          </div>
+          <div className="flex items-center text-gray-500 text-sm">
+            <Clock className="w-4 h-4 mr-1" />
+            <span>Quick response</span>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex space-x-3">
+          <Link
+            href={`/services/${service.id}`}
+            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center"
+          >
+            View Details
+          </Link>
+          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <Phone className="w-4 h-4" />
+          </button>
+          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <Mail className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

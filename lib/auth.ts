@@ -35,4 +35,22 @@ export const auth = betterAuth({
     refetchInterval: 0, // 👈 disable client auto polling
   },
   plugins: [nextCookies()],
+  api: {
+    signUpEmail: async ({ headers, body }: any) => {
+      // Implementation depends on your better-auth setup
+      throw new Error("Auth not configured");
+    },
+    signInEmail: async ({ headers, body }: any) => {
+      // Implementation depends on your better-auth setup
+      throw new Error("Auth not configured");
+    },
+    signOut: async ({ headers }: any) => {
+      // Implementation depends on your better-auth setup
+      throw new Error("Auth not configured");
+    },
+    getSession: async ({ headers }: any) => {
+      // Implementation depends on your better-auth setup
+      return null;
+    },
+  },
 });

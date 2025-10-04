@@ -1,8 +1,11 @@
+import ImageComponent from "@/components/ImageComponent";
+import MultipleImageComponent from "@/components/MultipleImageComponent";
+import ReviewForm from "@/components/ReviewForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
-import work from "@/public/eric-wang-um.webp";
+
 import {
   Calendar,
   CheckCircle,
@@ -12,30 +15,23 @@ import {
   Star,
   User,
 } from "lucide-react";
-import Image from "next/image";
+
 import React from "react";
-/* interface ServiceCardProps {
-  service: {
-    id: string;
-    name: string;
-    slug: string;
-    category: string;
-    address: string;
-    description: string;
-    rating: number;
-    contact: string;
-    providerBio: string;
-    images: string[];
-    rate: number;
-    rateType: "hourly" | "fixed" | "project";
-  };
-}
- */
+import ContactCard from "./_ContactProvider";
 
 export default async function page({ params }: any) {
   const { id } = await params;
 
-  const service = await db.service.findUnique({ where: { id: id } });
+  const service = await db.service.findUnique({
+    where: { id: id },
+    include: {
+      reviews: {
+        include: { reviewer: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
   // Handle the case where the service is not found
   if (!service) {
     return (
@@ -54,23 +50,9 @@ export default async function page({ params }: any) {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Service Image */}
       <div className="relative h-64 w-full bg-gradient-to-r from-blue-300 to-purple-400">
-        {/*  {service.images && service.images.length > 0 ? (
-          <Image
-            src={service.images[0].url}
-            
-            alt={service.name}
-            fill
-            className="object-cover opacity-70"
-          />
-        ) : 
-        null} */}
-
-        <Image
-          src={work}
-          alt={service.name}
-          fill
-          className="object-cover opacity-20"
-        />
+        {service.images && service.images.length > 0 ? (
+          <ImageComponent services={service} />
+        ) : null}
 
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <div className="text-center text-white max-w-2xl px-4">
@@ -89,10 +71,10 @@ export default async function page({ params }: any) {
               <CardContent className="p-6">
                 <h2 className="text-2xl font-bold mb-4">Service Details</h2>
                 <p className="text-gray-700 mb-6">
-                  {/* {service.description} */}
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste
+                  {service.description}
+                  {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste
                   nobis dicta facilis sapiente omnis, voluptas aperiam
-                  asperiores? Incidunt, ex porro.
+                  asperiores? Incidunt, ex porro. */}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -118,7 +100,7 @@ export default async function page({ params }: any) {
                 <div className="border-t pt-4">
                   <h3 className="text-xl font-semibold mb-2">Pricing</h3>
                   <div className="flex items-baseline">
-                    {/* <span className="text-3xl font-bold text-gray-900">
+                    <span className="text-3xl font-bold text-gray-900">
                       ${service.rate}
                     </span>
                     <span className="text-gray-600 ml-2">
@@ -127,8 +109,7 @@ export default async function page({ params }: any) {
                         : service.rateType === "fixed"
                         ? "fixed price"
                         : "per project"}
-                    </span> */}
-                    service rate: 10
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -156,10 +137,10 @@ export default async function page({ params }: any) {
                       <div className="flex items-center">
                         <Star className="h-5 w-5 text-yellow-400 fill-current" />
                         <span className="ml-1 font-semibold">
-                          {service.rating}
+                          {service.rating?.toFixed(1)}
                         </span>
                         <span className="text-gray-600 ml-1">
-                          ({/* {service.reviews.length} */} 15 reviews)
+                          ({service.reviews.length | 0} )
                         </span>
                       </div>
                     </div>
@@ -169,7 +150,7 @@ export default async function page({ params }: any) {
             </Card>
 
             {/* Past Work Gallery */}
-            {/*      {service.images && service.images.length > 0 && (
+            {service.images && service.images.length > 0 && (
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold mb-4">
@@ -181,19 +162,49 @@ export default async function page({ params }: any) {
                         key={index}
                         className="relative h-48 rounded-lg overflow-hidden"
                       >
-                        <Image
-                          src={image.url}
-                          alt={`Past work ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
+                        <MultipleImageComponent service={service} />
                       </div>
                     ))}
                   </div>
                 </CardContent>
               </Card>
-            )} */}
-            <Card>
+            )}
+            {/* Reviews Section */}
+            <Card className="mt-6">
+              <CardContent className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
+
+                {service.reviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {service.reviews.map((review) => (
+                      <div key={review.id} className="border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                          <span className="ml-2 font-semibold">
+                            {review.reviewer.name}
+                          </span>
+                        </div>
+                        <p className="text-gray-700">{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">No reviews yet. Be the first!</p>
+                )}
+
+                <ReviewForm serviceId={service.id} />
+              </CardContent>
+            </Card>
+            {/* <Card>
               <CardContent className="p-6">
                 <h2 className="text-2xl font-bold mb-4">Past Work Examples</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -207,19 +218,19 @@ export default async function page({ params }: any) {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Sidebar */}
           <div>
             {/* Contact Card */}
-            <Card className="sticky top-6 mb-6">
-              <CardContent className="p-6">
+            {/* <Card className="sticky top-6 mb-6">
+                 <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">Contact Provider</h3>
                 <div className="flex items-center mb-4">
                   <Phone className="h-5 w-5 text-blue-600 mr-2" />
                   <span className="font-medium">
-                    {/* {service.contact} */} Contact number 0000000000000000
+                    {service.contact} Contact number
                   </span>
                 </div>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 mb-4">
@@ -228,11 +239,12 @@ export default async function page({ params }: any) {
                 <Button variant="outline" className="w-full">
                   Request Quote
                 </Button>
-              </CardContent>
-            </Card>
+              </CardContent> 
+            </Card>*/}
+            <ContactCard contact={service.contact} />
 
             {/* Service Highlights */}
-            <Card>
+            <Card className="mt-6">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">Service Highlights</h3>
                 <ul className="space-y-3">

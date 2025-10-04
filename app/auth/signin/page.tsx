@@ -13,11 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { signIn } from "@/lib/actions/server";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import Router from "next/router";
 import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
@@ -31,12 +33,14 @@ export default function SignIn() {
       password: "",
     },
   });
-
+  const router = useRouter();
+  const { data: session, refetch } = useSession();
   /*  const [state, formAction] = useActionState(
     (prevState: { success: boolean } | undefined, formData: FormData) =>
       signIn(formData),
     { success: false }
   ); */
+
   const [state, formAction] = useActionState(
     async (
       prevState: { success: boolean; message: string },
@@ -46,82 +50,73 @@ export default function SignIn() {
     },
     { success: false, message: "" } // ✅ include message
   );
-  const router = useRouter();
 
   useEffect(() => {
-    if (state?.success) {
-      console.log("Uspjesna registracija");
-      router.push("/");
+    if (state?.success === true) {
+      refetch();
+      // Reset form only on successful submission
+      router.push("/"); // Redirect to homepage on successful sign-in
+      router.refresh();
     }
-  }, [state, router]);
+  }, [state?.success, router, refetch]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex item-center justify-center flex-grow">
-        <Card className="w-full max-w-sm mx-2">
-          <CardHeader>
-            <CardTitle className="text-center font-bold">
-              Prijavite se na svoj račun
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form action={formAction} className="space-y-8">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Please enter your email"
-                          type="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        This is your public display email.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Please enter your password"
-                          {...field}
-                          type="password"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Please enter your password minimum 8 characters long
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/*   <Button type="submit">Submit</Button> */}
-                <ButtonWithLoader />
-                {state?.success && (
-                  <div className="mt-1 flex justify-center text-center">
-                    <span className="px-4 py-2 rounded-lg bg-green-700 font-medium shadow-sm border border-green-300">
-                      Registration successful
-                    </span>
-                  </div>
-                )}
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <Card className="max-w-sm w-full mx-auto ">
+      <Form {...form}>
+        <form action={formAction} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Please enter your email"
+                    type="email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  This is your public display email.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Please enter your password"
+                    {...field}
+                    type="password"
+                  />
+                </FormControl>
+                <FormDescription>
+                  Please enter your password minimum 8 characters long
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/*   <Button type="submit">Submit</Button> */}
+          <ButtonWithLoader />
+          {/* ⚠️ This is the new part for displaying the error message */}
+          {state?.message && (
+            <div className="mt-4 text-center">
+              <span className="px-4 py-2 rounded-lg bg-red-600 font-medium shadow-sm border border-red-300 text-white">
+                {state.message}
+              </span>
+            </div>
+          )}
+        </form>
+      </Form>
+    </Card>
   );
 }
 function ButtonWithLoader() {

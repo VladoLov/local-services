@@ -68,6 +68,7 @@ model Review {
   serviceId   String
   service     Service  @relation(fields: [serviceId], references: [id])
 
+@@unique([reviewerId, serviceId]) // Jedan korisnik može ostaviti samo jednu recenziju po usluzi
   @@map("review")
 }
 

@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth"; // your Better Auth instance
 // your Prisma client
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient, RateType, Role } from "@prisma/client";
 import { getSession, updateUser } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -106,16 +106,18 @@ export async function signOut() {
   }
 } */
 
-("use server");
-
-import { PrismaClient } from "@prisma/client";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-
-const prisma = new PrismaClient();
-
 // Ova funkcija prima podatke iz forme i stvara novi servis.
-export async function createServiceAction(formData: FormData) {
+export async function createServiceAction(data: {
+  name: string;
+  category: string;
+  slug: string;
+  address: string;
+  description: string;
+  contact: string;
+  rate: number;
+  rateType: string;
+  images?: string[];
+}) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   // Provjera autorizacije
@@ -126,28 +128,25 @@ export async function createServiceAction(formData: FormData) {
   const userId = session.user.id;
 
   // Dohvatanje podataka iz forme
-  const name = formData.get("name") as string;
+  /* const name = formData.get("name") as string;
   const category = formData.get("category") as string;
   const slug = formData.get("slug") as string;
   const address = formData.get("address") as string;
   const description = formData.get("description") as string;
   const contact = formData.get("contact") as string;
   const rate = parseFloat(formData.get("rate") as string);
-  const rateType = formData.get("rateType") as string;
+  const rateType = formData.get("rateType") as string; */
 
   try {
     await prisma.service.create({
       data: {
-        name,
-        category,
-        slug,
-        address,
-        description,
-        contact,
-        rate,
-        rateType,
+        ...data,
+        rateType: data.rateType as RateType,
+        images: data.images ?? [], // ensure array
         provider: {
-          connect: { id: userId },
+          connect: {
+            id: userId,
+          },
         },
       },
     });
@@ -157,4 +156,85 @@ export async function createServiceAction(formData: FormData) {
     console.error("Greška pri kreiranju servisa:", error);
     return { success: false, message: "Greška pri kreiranju servisa." };
   }
+}
+
+export async function addImageToService(serviceId: string, imageUrl: string) {
+  // Ensure your Prisma model defines `images` as string[] (Postgres text[]).
+  // Example: images String[] @default([])
+  const updated = await prisma.service.update({
+    where: { id: serviceId },
+    data: {
+      images: { push: imageUrl },
+    },
+  });
+
+  return updated;
+}
+
+export async function addMultipleImageToService(
+  serviceId: string,
+  urls: string[]
+) {
+  const service = await prisma.service.findUnique({
+    where: { id: serviceId },
+    select: { images: true },
+  });
+  if (!service) {
+    throw new Error("Service not found");
+  }
+  // Assuming your schema has: images String[] (Postgres array in Neon)
+
+  const existingImages = service.images || [];
+  const combinedImages = [...existingImages, ...urls];
+  return await prisma.service.update({
+    where: { id: serviceId },
+
+    data: { images: { set: combinedImages } }, // replace with new array
+  });
+}
+
+export async function getServiceByUser(userId: string) {
+  return await prisma.service.findMany({
+    where: {
+      provider: {
+        id: userId,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+}
+export async function getMostRatedServices() {
+  return await prisma.service.findMany({
+    where: {},
+    select: {
+      id: true,
+      name: true,
+      rating: true,
+      images: true,
+      description: true,
+      category: true,
+    },
+    orderBy: {
+      rating: "desc",
+    },
+    take: 5,
+  });
+}
+
+export async function getMostPopularCategories() {
+  return await prisma.service.groupBy({
+    by: ["category"],
+    _count: {
+      category: true,
+    },
+    orderBy: {
+      _count: {
+        category: "desc",
+      },
+    },
+    take: 6,
+  });
 }

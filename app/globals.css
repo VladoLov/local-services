@@ -43,6 +43,23 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@layer utilities {
+  .animate-scroll-left {
+    animation: scroll-left 40s linear infinite;
+  }
+  .carousel-container:hover .animate-scroll-left {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

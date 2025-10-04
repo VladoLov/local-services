@@ -1,10 +1,10 @@
 "use server";
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth/api";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { db } from "../prisma";
 
 export const signUp = async (formData: FormData) => {
   const name = formData.get("name") as string;
@@ -62,35 +62,37 @@ export const signIn = async (formData: FormData) => {
   try {
     await auth.api.signInEmail({
       headers: await headers(),
-      body: { email, password },
+      body: { email, password, callbackURL: "/" },
     });
 
-    return { success: true, message: "Uspješna prijava!" };
+    // return { success: true, message: "Uspješna prijava!" }; //old way
+    // Best Practice: Redirect the user to a new page upon successful sign-in.
+    // This is the most efficient way to handle navigation in a Server Action.
   } catch (error) {
     console.error("Greška pri prijavi:", error);
     return { success: false, message: "Prijava nije uspjela." };
   }
+  revalidatePath("/"); // Revalidate the homepage or any other path as needed.
+  redirect("/"); // ⚠️ Replace '/home' with your desired redirect path.
 };
 
-export async function POST(req: Request) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user.id) return new Response("Unauthorized", { status: 401 });
-  const userId = session.user.id;
-  const body = await req.json();
-  await prisma.service.create({
-    data: {
-      name: body.name,
-      category: body.category,
-      slug: body.slug,
-      address: body.address,
-      description: body.description,
-      contact: body.contact,
-      rate: body.rate,
-      rateType: body.rateType,
-      provider: {
-        connect: { id: userId },
-      },
-    },
+export const signOut = async () => {
+  try {
+    await auth.api.signOut({ headers: await headers() });
+    revalidatePath("/"); // Revalidate the homepage or any other path as needed.
+    redirect("/"); // ⚠️ Replace '/home' with your desired redirect path.
+  } catch (error) {
+    console.error("Sign-out failed:", error);
+  }
+};
+
+export async function updateServiceRating(serviceId: string) {
+  const avg = await db.review.aggregate({
+    where: { serviceId },
+    _avg: { rating: true },
   });
-  return new Response("Service created", { status: 200 });
+  await db.service.update({
+    where: { id: serviceId },
+    data: { rating: avg._avg.rating ?? 0 },
+  });
 }
