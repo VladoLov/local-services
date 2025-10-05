@@ -35,8 +35,8 @@ export default async function page({ params }: any) {
   // Handle the case where the service is not found
   if (!service) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 bg-gray-100 min-h-screen">
-        <div className="bg-white p-6 rounded-xl shadow-lg mt-8 text-center">
+      <div className="flex flex-col items-center justify-center p-8  min-h-screen">
+        <div className=" p-6 rounded-xl shadow-lg mt-8 text-center">
           <h1 className="text-2xl font-bold text-gray-800">
             Usluga nije pronađena
           </h1>
@@ -47,7 +47,7 @@ export default async function page({ params }: any) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       {/* Hero Section with Service Image */}
       <div className="relative h-64 w-full bg-gradient-to-r from-blue-300 to-purple-400">
         {service.images && service.images.length > 0 ? (
@@ -69,7 +69,7 @@ export default async function page({ params }: any) {
             {/* Service Details */}
             <Card className="mb-6">
               <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Service Details</h2>
+                <h2 className="text-2xl font-bold mb-4">Detalji usluge</h2>
                 <p className="text-gray-700 mb-6">
                   {service.description}
                   {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste
@@ -84,31 +84,31 @@ export default async function page({ params }: any) {
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-5 w-5 text-blue-600 mr-2" />
-                    <span>Response time: Within 24 hours</span>
+                    <span>Odovaramo u periodu od 07:00 - 17:00</span>
                   </div>
-                  <div className="flex items-center">
+                  {/*   <div className="flex items-center">
                     <Calendar className="h-5 w-5 text-blue-600 mr-2" />
-                    <span>Available now</span>
-                  </div>
-                  <div className="flex items-center">
+                    <span>Kontakt za ter</span>
+                  </div> */}
+                  {/* <div className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                     <span>10+ projects completed</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Pricing */}
                 <div className="border-t pt-4">
-                  <h3 className="text-xl font-semibold mb-2">Pricing</h3>
+                  <h3 className="text-xl font-semibold mb-2">Cijena</h3>
                   <div className="flex items-baseline">
                     <span className="text-3xl font-bold text-gray-900">
-                      ${service.rate}
+                      BAM/{service.rate}
                     </span>
                     <span className="text-gray-600 ml-2">
                       {service.rateType === "hourly"
-                        ? "per hour"
+                        ? "po satu"
                         : service.rateType === "fixed"
-                        ? "fixed price"
-                        : "per project"}
+                        ? "fiksna cijena"
+                        : "po projektu"}
                     </span>
                   </div>
                 </div>
@@ -118,15 +118,14 @@ export default async function page({ params }: any) {
             {/* Provider Bio */}
             <Card className="mb-6">
               <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">About the Provider</h2>
+                <h2 className="text-2xl font-bold mb-4">O Uslužitelju</h2>
                 <div className="flex items-start">
                   <div className="bg-blue-100 p-3 rounded-full mr-4">
                     <User className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold">
-                      {/* {service.provider.name} */}
-                      Provider name
+                      {/* {service.provider.name} */}Petrovic Petar
                     </h3>
                     <p className="text-gray-700 mt-2">
                       {/* {service.provider.bio} */}
@@ -154,7 +153,7 @@ export default async function page({ params }: any) {
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold mb-4">
-                    Past Work Examples
+                    Slike i prijasninji radovi
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {service.images.slice(0, 4).map((image, index) => (
@@ -172,7 +171,7 @@ export default async function page({ params }: any) {
             {/* Reviews Section */}
             <Card className="mt-6">
               <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
+                <h2 className="text-2xl font-bold mb-4">Ocjene usluge</h2>
 
                 {service.reviews.length > 0 ? (
                   <div className="space-y-4">
@@ -198,7 +197,7 @@ export default async function page({ params }: any) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-600">No reviews yet. Be the first!</p>
+                  <p className="text-gray-600">Neam jos recenzija.</p>
                 )}
 
                 <ReviewForm serviceId={service.id} />
@@ -244,7 +243,7 @@ export default async function page({ params }: any) {
             <ContactCard contact={service.contact} />
 
             {/* Service Highlights */}
-            <Card className="mt-6">
+            {/*        <Card className="mt-6">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">Service Highlights</h3>
                 <ul className="space-y-3">
@@ -266,7 +265,7 @@ export default async function page({ params }: any) {
                   </li>
                 </ul>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>

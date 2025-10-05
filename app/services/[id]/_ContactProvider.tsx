@@ -16,10 +16,12 @@ export default function ContactCard({ contact }: { contact: string }) {
   return (
     <Card>
       <CardHeader className="top-6 mb-6">
-        <CardTitle className="text-lg font-bold">Contact Provider</CardTitle>
+        <CardTitle className="text-lg font-bold">
+          Kontakirajte uslužitelja
+        </CardTitle>
         <CardContent className="px-0">
           <CardDescription className="py-2">
-            Reach out via email, phone, WhatsApp, or Viber
+            Kontakirajte nas putem e-poste, telefona, WhatsApp-a, ili Viber-a
             <div className="flex items-center gap-3 my-4">
               <Mail className="text-blue-600 w-6 h-6" />
               <Link

@@ -59,7 +59,7 @@ export default async function MostPopularServices() {
               {/* Footer with fixed button position */}
               <CardFooter className="p-4 pt-0 mt-auto">
                 <button className="w-full py-2 rounded-md bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-medium hover:opacity-90 transition">
-                  View Details
+                  Pogledaj Više
                 </button>
               </CardFooter>
             </Card>

@@ -34,7 +34,7 @@ export default function Navbar({ session }: { session: Session | null }) {
   };
 
   return (
-    <nav className="bg-gray-900 text-white p-4">
+    <nav className="bg-gray-900  text-blue-400 p-4">
       <div className="container mx-auto flex justify-between items-center">
         {/* Site Logo/Name - Added onClick handler */}
         <Link
@@ -132,12 +132,12 @@ export default function Navbar({ session }: { session: Session | null }) {
               {session ? (
                 <Button
                   onClick={handleSignOut} // handleSignOut now closes the menu
-                  className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                  className="block text-black lg:inline-block py-2 px-3 rounded-lg bg-blue-400 hover:bg-blue-300 transition-colors duration-300"
                 >
                   Logout
                 </Button>
               ) : (
-                <Button className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300">
+                <Button className="block text-black lg:inline-block py-2 px-3 rounded-lg  bg-blue-400 hover:bg-blue-30 transition-colors duration-300">
                   <Link href="/signin" onClick={handleLinkClick}>
                     Login
                   </Link>

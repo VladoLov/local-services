@@ -32,16 +32,18 @@ export default function CategoryCardListClient({
         <h3 className="text-lg font-semibold text-gray-800 text-center">
           {categoryLabel}
         </h3>
-        <p className="text-sm text-blue-600 mt-1 font-medium">View Services</p>
+        {/* <p className="text-sm text-blue-600 mt-1 font-medium">
+          Pogledaj Usluge
+        </p> */}
       </div>
     );
   }
 
   const [simulatedUrl, setSimulatedUrl] = useState(
-    "The target URL will appear here after a click."
+    "Ciljani URL će se pojaviti ovdje nakon klika."
   );
   const [currentCategory, setCurrentCategory] = useState(
-    "Select a category below..."
+    "Odaberite kategoriju ispod..."
   );
 
   // ✅ useRouter is already available here
@@ -57,7 +59,7 @@ export default function CategoryCardListClient({
 
   return (
     <div>
-      <div className="mt-4 mb-8 text-center text-2xl font-bold text-blue-600">
+      <div className="mt-4 mb-8 text-center text-2xl font-bold text-orange-900">
         {currentCategory}
       </div>
 

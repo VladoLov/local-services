@@ -45,7 +45,7 @@
 
 @layer utilities {
   .animate-scroll-left {
-    animation: scroll-left 40s linear infinite;
+    animation: scroll-left 70s linear infinite;
   }
   .carousel-container:hover .animate-scroll-left {
     animation-play-state: paused;

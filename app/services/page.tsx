@@ -124,7 +124,8 @@ export default async function ServicesPage({
     const uniqueCategories = categories.map((c) => c.category);
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      //<div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen ">
         <Suspense fallback={<div className="p-8">Loading services...</div>}>
           <ServicesClient
             initialServices={services.map((service) => ({
@@ -154,7 +155,7 @@ export default async function ServicesPage({
   } catch (error) {
     console.error("Error fetching services:", error);
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
             Error Loading Services

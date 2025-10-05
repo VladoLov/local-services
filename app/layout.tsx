@@ -7,6 +7,7 @@ import { ImageKitProvider } from "@imagekit/next";
 import ImageKitProviderWrapper from "./providers/ImageKitProviderWrapper";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +33,26 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
       >
         <ImageKitProviderWrapper>
-          <Navbar session={session} />
-          {children}
+          <div className="relative min-h-screen overflow-hidden">
+            {/* Amber Glow Background */}
+            <div
+              className="absolute inset-0 z-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(125% 125% at 50% 90%, #ffffff 40%, #f59e0b 100%)",
+                backgroundSize: "100% 100%",
+              }}
+            />
+            {/* Main Content */}
+            <div className="relative z-10 flex flex-col min-h-screen">
+              <Navbar session={session} />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </div>
           <Toaster position="top-center" richColors />
         </ImageKitProviderWrapper>
       </body>

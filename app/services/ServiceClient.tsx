@@ -226,7 +226,7 @@ export default function ServicesClient({
 
           {/* Services Grid */}
           {filteredAndSortedServices.length > 0 ? (
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredAndSortedServices.map((service) => (
                 <ServiceCard key={service.id} service={service} />
               ))}
