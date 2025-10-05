@@ -181,10 +181,10 @@ export default function ServicesClient({
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-          {filters.category ? `${filters.category} Services` : "All Services"}
+          {filters.category ? `${filters.category} Usluge` : "Sve Usluge"}
         </h1>
         <p className="text-xl text-gray-600">
-          Find trusted professionals in your area
+          Pronađite najbolje lokalne usluge koje vam trebaju
         </p>
       </div>
 
@@ -194,7 +194,7 @@ export default function ServicesClient({
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search services..."
+            placeholder="Traži usluge"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
@@ -226,7 +226,7 @@ export default function ServicesClient({
 
           {/* Services Grid */}
           {filteredAndSortedServices.length > 0 ? (
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredAndSortedServices.map((service) => (
                 <ServiceCard key={service.id} service={service} />
               ))}
@@ -237,10 +237,10 @@ export default function ServicesClient({
                 <Search className="w-16 h-16 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No services found
+                Nema rezultata
               </h3>
               <p className="text-gray-600 mb-4">
-                Try adjusting your filters or search terms
+                Pokušajte prilagoditi kriterije pretrage ili filtere
               </p>
               <button
                 onClick={() => {
@@ -249,7 +249,7 @@ export default function ServicesClient({
                 }}
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
-                Clear All Filters
+                Poništi sve filtere
               </button>
             </div>
           )}

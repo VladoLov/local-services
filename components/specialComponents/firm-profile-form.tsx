@@ -205,17 +205,21 @@ export function FirmProfileForm({ onSuccess, onSkip }: FirmProfileFormProps) {
               />
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <SubmitButton />
-                {onSkip && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onSkip}
-                    className="w-full sm:w-auto bg-transparent"
-                  >
-                    Preskoči za sada
-                  </Button>
-                )}
+                <div className="flex-2">
+                  <SubmitButton />
+                </div>
+                <div className="">
+                  {onSkip && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onSkip}
+                      className="w-full sm:w-auto bg-transparent"
+                    >
+                      Preskoči za sada
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {state?.message && !state?.success && (

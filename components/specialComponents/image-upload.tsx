@@ -117,20 +117,43 @@ export default function ImageUpload({
 
   return (
     <div className="max-w-2xl max-h-2xl mx-auto space-y-2 flex flex-col justify-center items-center w-full">
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleFiles}
-      />
-      <Button
-        type="button"
-        className="w-full border-accent-foreground hover:bg-accent-foreground/10"
-        onClick={handleUpload}
-      >
-        Upload
-      </Button>
+      <div className="w-full flex flex-col items-center gap-3">
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer flex flex-col items-center justify-center w-full  py-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-10 w-10 text-gray-400 mb-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16V4m0 0l-4 4m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"
+            />
+          </svg>
+          <span className="text-gray-700 font-medium">
+            Kliknite da izaberete slike
+          </span>
+          <span className="text-gray-400 text-sm">
+            (Podržani formati: JPG, PNG...)
+          </span>
+        </label>
+
+        <input
+          id="file-upload"
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFiles}
+          className="hidden"
+        />
+      </div>
 
       {Object.entries(progress).map(([file, val]) => (
         <div key={file} className="flex justify-between">
@@ -138,16 +161,26 @@ export default function ImageUpload({
         </div>
       ))}
 
-      <div className="mt-4 flex gap-2 flex-wrap">
+      <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
         {previews.map((url, index) => (
           <img
             key={index}
             src={url}
             alt={`preview-${index}`}
-            className="w-32 h-32 object-cover rounded border"
+            className="w-full sm:w-32 h-32 object-cover rounded border"
           />
         ))}
       </div>
+      <p className="text-sm text-muted-foreground">
+        Nakon sto izaberete slike, kliknite na gumb "Upload"
+      </p>
+      <Button
+        type="button"
+        className="w-full border-accent-foreground hover:bg-accent-foreground/10"
+        onClick={handleUpload}
+      >
+        Upload
+      </Button>
     </div>
   );
 }

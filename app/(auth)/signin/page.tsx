@@ -1,133 +1,3 @@
-/* "use client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { signIn } from "@/lib/actions/server";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Router from "next/router";
-import { useActionState, useEffect } from "react";
-import { useFormStatus } from "react-dom";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
-
-const schema = z.object({
-  email: z.string().email("Invalid email"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-export default function SignIn() {
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-  const router = useRouter();
-  const { data: session, refetch } = useSession();
-
-  const [state, formAction] = useActionState(
-    async (
-      prevState: { success: boolean; message: string },
-      formData: FormData
-    ) => {
-      return await signIn(formData);
-    },
-    { success: false, message: "" } // ✅ include message
-  );
-
-  useEffect(() => {
-    if (state?.success === true) {
-      refetch();
-      // Reset form only on successful submission
-      router.push("/"); // Redirect to homepage on successful sign-in
-      router.refresh();
-    }
-  }, [state?.success, router, refetch]);
-
-  return (
-    <Card className="max-w-sm w-full mx-auto ">
-      <Form {...form}>
-        <form action={formAction} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Please enter your email"
-                    type="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  This is your public display email.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Please enter your password"
-                    {...field}
-                    type="password"
-                  />
-                </FormControl>
-                <FormDescription>
-                  Please enter your password minimum 8 characters long
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <ButtonWithLoader />
-          
-          {state?.message && (
-            <div className="mt-4 text-center">
-              <span className="px-4 py-2 rounded-lg bg-red-600 font-medium shadow-sm border border-red-300 text-white">
-                {state.message}
-              </span>
-            </div>
-          )}
-        </form>
-      </Form>
-    </Card>
-  );
-}
-function ButtonWithLoader() {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      type="submit"
-      disabled={pending}
-      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
-    >
-      {pending ? "Procesiranje..." : "Prijava"}
-    </Button>
-  );
-}
- */
-
 "use client";
 
 import { useActionState, useEffect } from "react";
@@ -152,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FieldDescription, FieldSeparator } from "@/components/ui/field";
+import Link from "next/link";
 
 const schema = z.object({
   email: z.string().email("Unesite ispravan email"),
@@ -182,8 +53,8 @@ export default function SignIn() {
   }, [state?.success, refetch, router]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-md mx-auto">
-      <Card className="overflow-hidden">
+    <div className="flex flex-col gap-6 max-w-md mx-auto  justify-center h-[60vh]">
+      <Card className="overflow-hidden border-none shadow-none">
         <CardContent className="grid p-8">
           <Form {...form}>
             <form action={formAction} className="space-y-6">
@@ -248,7 +119,7 @@ export default function SignIn() {
                 </div>
               )}
 
-              <FieldSeparator>ili nastavite sa</FieldSeparator>
+              {/*          <FieldSeparator>ili nastavite sa</FieldSeparator>
               <div className="grid grid-cols-3 gap-4">
                 <Button variant="outline" type="button">
                   <svg
@@ -280,20 +151,20 @@ export default function SignIn() {
                     <path d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303z" />
                   </svg>
                 </Button>
-              </div>
+              </div> */}
 
               <FieldDescription className="text-center">
                 Nemate račun?{" "}
-                <a href="/signup" className="underline hover:text-blue-600">
+                <Link href="signUp" className="underline hover:text-blue-600">
                   Registrujte se
-                </a>
+                </Link>
               </FieldDescription>
             </form>
           </Form>
         </CardContent>
       </Card>
 
-      <FieldDescription className="text-center px-6">
+      {/* <FieldDescription className="text-center px-6">
         Klikom na “Prijava” prihvatate naše{" "}
         <a href="#" className="underline">
           Uslove korištenja
@@ -303,7 +174,7 @@ export default function SignIn() {
           Politiku privatnosti
         </a>
         .
-      </FieldDescription>
+      </FieldDescription> */}
     </div>
   );
 }

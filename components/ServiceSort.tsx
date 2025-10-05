@@ -16,9 +16,9 @@ export default function ServiceSort({
   totalResults,
 }: ServiceSortProps) {
   const sortOptions = [
-    { field: "rating" as const, label: "Rating" },
-    { field: "rate" as const, label: "Price" },
-    { field: "createdAt" as const, label: "Newest" },
+    { field: "rating" as const, label: "Rejting" },
+    { field: "rate" as const, label: "Cijena" },
+    { field: "createdAt" as const, label: "Noviji" },
   ];
 
   const handleSortChange = (field: ServiceSortType["field"]) => {
@@ -53,11 +53,11 @@ export default function ServiceSort({
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="text-gray-700">
-          <span className="font-semibold">{totalResults}</span> services found
+          <span className="font-semibold">{totalResults}</span> usluge pronađene
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600 mr-2">Sort by:</span>
+          <span className="text-sm text-gray-600 mr-2">Poredaj:</span>
           {sortOptions.map((option) => (
             <button
               key={option.field}

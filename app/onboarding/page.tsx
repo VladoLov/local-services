@@ -53,6 +53,12 @@ export default function OnboardingPage() {
     setSelectedRole(role);
   };
 
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Increment the current step by 1.
+   * @returns {void}
+   */
+  /*******  fa2bf548-8525-476a-8c23-4ae5ad71cf80  *******/
   const handleNextStep = () => {
     setCurrentStep((prev) => prev + 1);
   };
@@ -77,8 +83,11 @@ export default function OnboardingPage() {
   };
 
   const handleFinishOnboarding = () => {
-    // Redirect to homepage
     router.push("/");
+    // Redirect to homepage
+    setTimeout(() => {
+      window.location.href = "/"; // full reload on homepage
+    }, 100);
   };
 
   const canProceedFromStep1 = selectedRole !== undefined;

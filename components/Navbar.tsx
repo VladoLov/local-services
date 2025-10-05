@@ -21,37 +21,25 @@ export default function Navbar({ session }: { session: Session | null }) {
   /* const signOut = authClient.signOut; */
   const router = useRouter();
 
+  // Function to close the mobile menu
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   const handleSignOut = async () => {
     await signOut();
-
+    // Close the menu before redirection
+    setIsOpen(false);
     router.push("/"); // Refresh the page to update the UI after sign-out
   };
 
-  // Use useEffect to handle session changes and force re-render
-  /*     useEffect(() => {
-    if (session === true) {
-      setIsLoading(true); // Wait until session status is fully loaded
-    } else if ( === false) {
-      setIsLoading(false); // Session has been determined
-    }
-  }, [isPending]); // This hook tracks the session status changes */
-
-  // This ensures the UI is always in sync with the session state
-  /* useEffect(() => {
-    if (session) {
-      console.log("User logged in:", session.user);
-    } else {
-      console.log("User logged out.");
-    }
-  }, [session]); // Only rerender when session changes */
-
-  /*  if (isLoading) return null; */
   return (
     <nav className="bg-gray-900 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Site Logo/Name */}
+        {/* Site Logo/Name - Added onClick handler */}
         <Link
           href="/"
+          onClick={handleLinkClick}
           className="text-xl font-bold rounded-lg px-2 py-1 hover:bg-gray-800 transition-colors duration-300"
         >
           Majstor Zanata
@@ -91,7 +79,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
         {/* Main Navigation Links */}
         {/* Conditionally hide/show based on `isOpen` state on mobile,
-            but always show on large screens (`lg:flex`) */}
+          but always show on large screens (`lg:flex`) */}
         <div
           className={`
             ${isOpen ? "block" : "hidden"} 
@@ -105,6 +93,7 @@ export default function Navbar({ session }: { session: Session | null }) {
             <li>
               <Link
                 href="/"
+                onClick={handleLinkClick}
                 className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
               >
                 Home
@@ -113,6 +102,7 @@ export default function Navbar({ session }: { session: Session | null }) {
             <li>
               <Link
                 href="/services"
+                onClick={handleLinkClick}
                 className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
               >
                 Usluge
@@ -121,6 +111,7 @@ export default function Navbar({ session }: { session: Session | null }) {
             <li>
               <Link
                 href="/about"
+                onClick={handleLinkClick}
                 className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
               >
                 About
@@ -130,6 +121,7 @@ export default function Navbar({ session }: { session: Session | null }) {
               <li>
                 <Link
                   href="/addservice"
+                  onClick={handleLinkClick}
                   className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
                 >
                   Dodaj Uslugu
@@ -139,20 +131,16 @@ export default function Navbar({ session }: { session: Session | null }) {
             <li>
               {session ? (
                 <Button
-                  /*    onClick={handleSignOut} */
-                  /*  onClick={() => {
-                    signOut();
-                   
-                    router.refresh(); // Redirect to home after sign-out
-                  }} */
-                  onClick={handleSignOut}
+                  onClick={handleSignOut} // handleSignOut now closes the menu
                   className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300"
                 >
                   Logout
                 </Button>
               ) : (
                 <Button className="block lg:inline-block py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors duration-300">
-                  <Link href="/auth/signin">Login</Link>
+                  <Link href="/signin" onClick={handleLinkClick}>
+                    Login
+                  </Link>
                 </Button>
               )}
             </li>

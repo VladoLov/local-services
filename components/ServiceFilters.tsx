@@ -51,7 +51,7 @@ export default function ServiceFilters({
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <Filter className="w-5 h-5 mr-2" />
-          Category
+          Kategorija
         </h3>
         <select
           value={filters.category || ""}
@@ -60,7 +60,7 @@ export default function ServiceFilters({
           }
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="">All Categories</option>
+          <option value="">Sve kategorije</option>
           {categories.map((category) => (
             <option key={category} value={category}>
               {category}
@@ -73,11 +73,11 @@ export default function ServiceFilters({
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <MapPin className="w-5 h-5 mr-2" />
-          Location
+          Lokacija
         </h3>
         <input
           type="text"
-          placeholder="Enter city or area"
+          placeholder="unesite grad"
           value={filters.location || ""}
           onChange={(e) =>
             handleFilterChange("location", e.target.value || undefined)
@@ -90,13 +90,13 @@ export default function ServiceFilters({
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <DollarSign className="w-5 h-5 mr-2" />
-          Price Range
+          Cijenovni raspon
         </h3>
         <div className="space-y-4">
           <div className="flex space-x-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Min Price
+                Min Cijena
               </label>
               <input
                 type="number"
@@ -110,7 +110,7 @@ export default function ServiceFilters({
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Max Price
+                Max Cijena
               </label>
               <input
                 type="number"
@@ -133,7 +133,7 @@ export default function ServiceFilters({
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <Star className="w-5 h-5 mr-2" />
-          Minimum Rating
+          Minimalni rejting
         </h3>
         <div className="space-y-2">
           {[4.5, 4.0, 3.5, 3.0].map((rating) => (
@@ -159,9 +159,7 @@ export default function ServiceFilters({
                     }`}
                   />
                 ))}
-                <span className="ml-2 text-sm text-gray-700">
-                  {rating}+ stars
-                </span>
+                <span className="ml-2 text-sm text-gray-700">{rating}</span>
               </div>
             </label>
           ))}
@@ -169,7 +167,7 @@ export default function ServiceFilters({
       </div>
 
       {/* Rate Type Filter */}
-      <div>
+      {/*   <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3">Rate Type</h3>
         <div className="space-y-2">
           {[
@@ -192,14 +190,14 @@ export default function ServiceFilters({
             </label>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Clear Filters */}
       <button
         onClick={clearFilters}
         className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
       >
-        Clear All Filters
+        Poništi filtere
       </button>
     </div>
   );
@@ -221,7 +219,7 @@ export default function ServiceFilters({
             <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">Filters</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Filteri</h2>
                   <button
                     onClick={() => setIsOpen(false)}
                     className="p-2 hover:bg-gray-100 rounded-full"

@@ -52,7 +52,7 @@ export function OnboardingImageUpload({
         </p>
       </div>
 
-      <Card>
+      <Card className="border-none sm:border border-muted-foreground sm:shadow-md shadow-none">
         <CardHeader>
           <CardTitle>Upload slika</CardTitle>
           <CardDescription>

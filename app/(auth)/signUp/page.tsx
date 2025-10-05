@@ -201,8 +201,8 @@ export default function SignUpForm() {
   }, [state, router]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-md mx-auto">
-      <Card className="overflow-hidden">
+    <div className="flex flex-col gap-6 max-w-md mx-auto justify-center h-[60vh]">
+      <Card className="overflow-hidden border-none shadow-none">
         <CardContent className="grid p-8">
           <Form {...form}>
             <form action={formAction} className="space-y-6">
