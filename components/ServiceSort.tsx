@@ -57,7 +57,9 @@ export default function ServiceSort({
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600 mr-2">Poredaj:</span>
+          <span className="text-sm text-gray-600 mr-2 hidden sm:flex">
+            Poredaj:
+          </span>
           {sortOptions.map((option) => (
             <button
               key={option.field}

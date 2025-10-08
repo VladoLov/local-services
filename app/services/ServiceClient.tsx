@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ServiceCard from "@/components/ServiceCard";
 import ServiceFilters from "@/components/ServiceFilters";
@@ -10,7 +10,7 @@ import {
   ServiceFilters as ServiceFiltersType,
   ServiceSort as ServiceSortType,
 } from "@/lib/types/service";
-import { Search, MapPin, Filter } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface ServicesClientProps {
   initialServices: Service[];
@@ -28,15 +28,19 @@ export default function ServicesClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [services, setServices] = useState<Service[]>(initialServices);
-  const [filters, setFilters] = useState<ServiceFiltersType>(initialFilters);
-  const [sort, setSort] = useState<ServiceSortType>(initialSort);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
+  const [services] = React.useState<Service[]>(initialServices);
+  const [filters, setFilters] =
+    React.useState<ServiceFiltersType>(initialFilters);
+  const [sort, setSort] = React.useState<ServiceSortType>(initialSort);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [isMobile, setIsMobile] = React.useState(false);
 
-  useEffect(() => {
+  const deferredFilters = React.useDeferredValue(filters);
+  const deferredSearchQuery = React.useDeferredValue(searchQuery);
+
+  // Hydrate filters from URL (no location)
+  React.useEffect(() => {
     const category = searchParams.get("category") || undefined;
-    const location = searchParams.get("location") || undefined;
     const minPrice = searchParams.get("minPrice")
       ? parseFloat(searchParams.get("minPrice")!)
       : undefined;
@@ -48,133 +52,113 @@ export default function ServicesClient({
       : undefined;
     const rateType = searchParams.get("rateType") || undefined;
 
-    setFilters((prev) => ({
-      ...prev,
+    const next: ServiceFiltersType = {
+      ...filters,
       category,
-      location,
       minPrice,
       maxPrice,
       minRating,
-      rateType: rateType as "HOURLY" | "FIXED" | "PROJECT" | undefined,
-    }));
-  }, [searchParams]);
-
-  // Check if mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      rateType: rateType as any,
     };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    if (JSON.stringify(filters) !== JSON.stringify(next)) {
+      setFilters(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Mobile check
+  React.useEffect(() => {
+    const fn = () => setIsMobile(window.innerWidth < 768);
+    fn();
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
   }, []);
 
-  // Update URL when filters or sort change
-  useEffect(() => {
-    const params = new URLSearchParams();
+  // URL sync (debounced), no location keys
+  React.useEffect(() => {
+    const t = setTimeout(() => {
+      const params = new URLSearchParams();
 
-    if (filters.category) params.set("category", filters.category);
-    if (filters.location) params.set("location", filters.location);
-    if (filters.minPrice !== undefined)
-      params.set("minPrice", filters.minPrice.toString());
-    if (filters.maxPrice !== undefined)
-      params.set("maxPrice", filters.maxPrice.toString());
-    if (filters.minRating !== undefined)
-      params.set("minRating", filters.minRating.toString());
-    if (filters.rateType) params.set("rateType", filters.rateType);
-    if (sort.field) params.set("sortField", sort.field);
-    if (sort.direction) params.set("sortDirection", sort.direction);
+      if (filters.category) params.set("category", filters.category);
+      if (filters.minPrice !== undefined)
+        params.set("minPrice", String(filters.minPrice));
+      if (filters.maxPrice !== undefined)
+        params.set("maxPrice", String(filters.maxPrice));
+      if (filters.minRating !== undefined)
+        params.set("minRating", String(filters.minRating));
+      if (filters.rateType) params.set("rateType", filters.rateType);
 
-    const newUrl = params.toString()
-      ? `/services?${params.toString()}`
-      : "/services";
-    router.push(newUrl, { scroll: false });
+      if (sort.field) params.set("sortField", sort.field);
+      if (sort.direction) params.set("sortDirection", sort.direction);
+
+      const newUrl = params.toString()
+        ? `/services?${params.toString()}`
+        : "/services";
+      const current = window.location.pathname + window.location.search;
+
+      if (newUrl !== current) {
+        router.replace(newUrl, { scroll: false });
+      }
+    }, 250);
+
+    return () => clearTimeout(t);
   }, [filters, sort, router]);
 
-  // Filter and sort services client-side for immediate feedback
+  // Client-side filter + sort
   const filteredAndSortedServices = React.useMemo(() => {
-    let filtered = [...services];
+    let list = [...services];
 
-    // Apply search query
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (service) =>
-          service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          service.description
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          service.category.toLowerCase().includes(searchQuery.toLowerCase())
+    if (deferredSearchQuery) {
+      const q = deferredSearchQuery.toLowerCase();
+      list = list.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.description.toLowerCase().includes(q) ||
+          s.category.toLowerCase().includes(q)
       );
     }
 
-    // Apply filters
-    if (filters.category) {
-      filtered = filtered.filter(
-        (service) => service.category === filters.category
-      );
+    if (deferredFilters.category) {
+      list = list.filter((s) => s.category === deferredFilters.category);
+    }
+    if (deferredFilters.minPrice !== undefined) {
+      list = list.filter((s) => s.rate >= deferredFilters.minPrice!);
+    }
+    if (deferredFilters.maxPrice !== undefined) {
+      list = list.filter((s) => s.rate <= deferredFilters.maxPrice!);
+    }
+    if (deferredFilters.minRating !== undefined) {
+      list = list.filter((s) => s.rating >= deferredFilters.minRating!);
+    }
+    if (deferredFilters.rateType) {
+      list = list.filter((s) => s.rateType === deferredFilters.rateType);
     }
 
-    if (filters.location) {
-      filtered = filtered.filter((service) =>
-        service.address.toLowerCase().includes(filters.location!.toLowerCase())
-      );
-    }
-
-    if (filters.minPrice !== undefined) {
-      filtered = filtered.filter(
-        (service) => service.rate >= filters.minPrice!
-      );
-    }
-
-    if (filters.maxPrice !== undefined) {
-      filtered = filtered.filter(
-        (service) => service.rate <= filters.maxPrice!
-      );
-    }
-
-    if (filters.minRating !== undefined) {
-      filtered = filtered.filter(
-        (service) => service.rating >= filters.minRating!
-      );
-    }
-
-    if (filters.rateType) {
-      filtered = filtered.filter(
-        (service) => service.rateType === filters.rateType
-      );
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
-
+    list.sort((a, b) => {
+      let aVal = 0;
+      let bVal = 0;
       switch (sort.field) {
         case "rating":
-          aValue = a.rating;
-          bValue = b.rating;
+          aVal = a.rating;
+          bVal = b.rating;
           break;
         case "rate":
-          aValue = a.rate;
-          bValue = b.rate;
+          aVal = a.rate;
+          bVal = b.rate;
           break;
         case "createdAt":
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
+          aVal = new Date(a.createdAt).getTime();
+          bVal = new Date(b.createdAt).getTime();
           break;
         default:
           return 0;
       }
-
-      if (sort.direction === "asc") {
-        return aValue - bValue;
-      } else {
-        return bValue - aValue;
-      }
+      return sort.direction === "asc" ? aVal - bVal : bVal - aVal;
     });
 
-    return filtered;
-  }, [services, filters, sort, searchQuery]);
+    return list;
+  }, [services, deferredFilters, sort, deferredSearchQuery]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -191,7 +175,7 @@ export default function ServicesClient({
       {/* Search Bar */}
       <div className="mb-8">
         <div className="relative max-w-2xl">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
             placeholder="Traži usluge"
@@ -217,14 +201,12 @@ export default function ServicesClient({
 
         {/* Main Content */}
         <div className="flex-1">
-          {/* Sort Controls */}
           <ServiceSort
             sort={sort}
             onSortChange={setSort}
             totalResults={filteredAndSortedServices.length}
           />
 
-          {/* Services Grid */}
           {filteredAndSortedServices.length > 0 ? (
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredAndSortedServices.map((service) => (

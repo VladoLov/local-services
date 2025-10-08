@@ -17,9 +17,9 @@ export default async function Home() {
   if (!session) {
     return (
       <div className="">
-        <h1 className="text-3xl font-bold mb-4">Local Services</h1>
+        {/*   <h1 className="text-3xl font-bold mb-4">Local Services</h1>
         <h2>Welcome, please login</h2>
-        <Link href="/signin">Login</Link>
+        <Link href="/signin">Login</Link> */}
         <HeroSection />
       </div>
     );

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Filter, X, ChevronDown, MapPin, DollarSign, Star } from "lucide-react";
+import React from "react";
+import { Filter, ChevronDown, DollarSign, Star } from "lucide-react";
 import { ServiceFilters as ServiceFiltersType } from "@/lib/types/service";
 
 interface ServiceFiltersProps {
@@ -17,17 +17,14 @@ export default function ServiceFilters({
   categories,
   isMobile = false,
 }: ServiceFiltersProps) {
-  const [isOpen, setIsOpen] = useState(!isMobile);
-  const [priceRange, setPriceRange] = useState({
-    min: filters.minPrice || 0,
-    max: filters.maxPrice || 1000,
+  const [isOpen, setIsOpen] = React.useState(!isMobile);
+  const [priceRange, setPriceRange] = React.useState({
+    min: filters.minPrice ?? 0,
+    max: filters.maxPrice ?? 1000,
   });
 
   const handleFilterChange = (key: keyof ServiceFiltersType, value: any) => {
-    onFiltersChange({
-      ...filters,
-      [key]: value,
-    });
+    onFiltersChange({ ...filters, [key]: value });
   };
 
   const handlePriceChange = (type: "min" | "max", value: number) => {
@@ -47,7 +44,7 @@ export default function ServiceFilters({
 
   const FilterContent = () => (
     <div className="space-y-6">
-      {/* Category Filter */}
+      {/* Category */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <Filter className="w-5 h-5 mr-2" />
@@ -69,24 +66,7 @@ export default function ServiceFilters({
         </select>
       </div>
 
-      {/* Location Filter */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-          <MapPin className="w-5 h-5 mr-2" />
-          Lokacija
-        </h3>
-        <input
-          type="text"
-          placeholder="unesite grad"
-          value={filters.location || ""}
-          onChange={(e) =>
-            handleFilterChange("location", e.target.value || undefined)
-          }
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
-
-      {/* Price Range Filter */}
+      {/* Price */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <DollarSign className="w-5 h-5 mr-2" />
@@ -129,7 +109,7 @@ export default function ServiceFilters({
         </div>
       </div>
 
-      {/* Rating Filter */}
+      {/* Rating */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
           <Star className="w-5 h-5 mr-2" />
@@ -148,32 +128,21 @@ export default function ServiceFilters({
                 }
                 className="mr-3 text-blue-600 focus:ring-blue-500"
               />
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < Math.floor(rating)
-                        ? "text-yellow-400 fill-current"
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
-                <span className="ml-2 text-sm text-gray-700">{rating}</span>
-              </div>
+              <span className="text-sm text-gray-700">{rating}+</span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* Rate Type Filter */}
-      {/*   <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Rate Type</h3>
+      {/* Rate Type (optional, keep if you want) */}
+      {/* 
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Tip cijene</h3>
         <div className="space-y-2">
           {[
-            { value: "HOURLY", label: "Hourly Rate" },
-            { value: "FIXED", label: "Fixed Price" },
-            { value: "PROJECT", label: "Project Based" },
+            { value: "HOURLY", label: "Po satu" },
+            { value: "FIXED", label: "Fiksno" },
+            { value: "PROJECT", label: "Projektno" },
           ].map((type) => (
             <label key={type.value} className="flex items-center">
               <input
@@ -181,18 +150,17 @@ export default function ServiceFilters({
                 name="rateType"
                 value={type.value}
                 checked={filters.rateType === type.value}
-                onChange={(e) =>
-                  handleFilterChange("rateType", e.target.value as any)
-                }
+                onChange={(e) => handleFilterChange("rateType", e.target.value as any)}
                 className="mr-3 text-blue-600 focus:ring-blue-500"
               />
               <span className="text-sm text-gray-700">{type.label}</span>
             </label>
           ))}
         </div>
-      </div> */}
+      </div>
+      */}
 
-      {/* Clear Filters */}
+      {/* Clear */}
       <button
         onClick={clearFilters}
         className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
@@ -205,7 +173,6 @@ export default function ServiceFilters({
   if (isMobile) {
     return (
       <>
-        {/* Mobile Filter Button */}
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-40"
@@ -213,7 +180,6 @@ export default function ServiceFilters({
           <Filter className="w-6 h-6" />
         </button>
 
-        {/* Mobile Filter Modal */}
         {isOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
             <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] overflow-y-auto">
@@ -224,7 +190,7 @@ export default function ServiceFilters({
                     onClick={() => setIsOpen(false)}
                     className="p-2 hover:bg-gray-100 rounded-full"
                   >
-                    <X className="w-6 h-6" />
+                    <ChevronDown className="w-6 h-6 rotate-180" />
                   </button>
                 </div>
                 <FilterContent />

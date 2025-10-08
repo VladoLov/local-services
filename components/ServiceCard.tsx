@@ -87,8 +87,8 @@ const ServiceCard = ({ service }: Props) => {
             </div>
 
             {/* Price */}
-            <div className="text-green-600 font-bold text-sm sm:text-lg sm:ml-4 mt-1 sm:mt-0">
-              <span className="inline ">
+            <div className="text-green-600 font-bold text-xs sm:text-lg sm:ml-4 sm:mt-0 flex items-center">
+              <span className="inline items-center">
                 {formatPrice(service.rate, service.rateType)}
               </span>
             </div>
